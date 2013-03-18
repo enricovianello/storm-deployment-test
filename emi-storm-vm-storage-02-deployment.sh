@@ -277,8 +277,8 @@ add_tape_storage_area() {
 	echo "linenum=$linenum"
 	
 	echo "delete line $linenum"
-	awk -v n=$linenum 'NR == n {next} {print}' $output_file > $output_file.tmp
-	awk -v "n=$linenum" -v "s=$newriga" '(NR==n) { print s } 1' $output_file.tmp
+	execute "awk -v n=$linenum 'NR==n {next} {print}' $output_file > $output_file.tmp"
+	execute "awk -v n=$linenum -v s=$newriga 'NR==n { print s } 1' $output_file.tmp"
 	execute "mv $output_file.tmp $output_file"
 		
 	echo "adding 'tape' storage area details..."
