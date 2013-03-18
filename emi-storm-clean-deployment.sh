@@ -86,7 +86,12 @@ set_users() {
 		#not exists: create
 		execute "useradd -M storm"
 	fi
-	execute "chown -R storm:storm /var/log/storm /etc/storm"
+	if [ -d "/var/log/storm" ]; then
+		execute "chown -R storm:storm /var/log/storm"
+	fi
+	if [ -d "/etc/storm" ]; then
+		execute "chown -R storm:storm /etc/storm"
+	fi
 	# gridhttps user
 	if id -u gridhttps >/dev/null 2>&1
 	then
