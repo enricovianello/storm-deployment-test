@@ -24,8 +24,12 @@ execute "rm -rf /var/log/storm"
 execute "rm -rf /etc/storm"
 execute "yum erase -y emi-release"
 execute "yum erase -y epel-release"
-execute "rm $egi_trustanchors_file"
-execute "rm $emi_repo_filename"
+if [ -e $egi_trustanchors_file ]
+	execute "rm $egi_trustanchors_file"
+fi
+if [ -e $emi_repo_filename ]
+	execute "rm $emi_repo_filename"
+fi
 execute "yum clean all"
 
 echo "StoRM 1.11 uninstall - terminated"
