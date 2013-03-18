@@ -33,20 +33,20 @@ then
 	execute "groupdel storm"
 fi
 
-if [ -d $log_directory ]
+if [ -d $log_directory ]; then
 	execute "rm -rf /var/log/storm"
 fi
-if [ -d $conf_directory ]
+if [ -d $conf_directory ]; then
 	execute "rm -rf /etc/storm"
 fi
 
 execute "yum erase -y emi-release"
 execute "yum erase -y epel-release"
 
-if [ -e $egi_trustanchors_file ]
+if [ -e $egi_trustanchors_file ]; then
 	execute "rm $egi_trustanchors_file"
 fi
-if [ -e $emi_repo_filename ]
+if [ -e $emi_repo_filename ]; then
 	execute "rm $emi_repo_filename"
 fi
 execute "yum clean all"
