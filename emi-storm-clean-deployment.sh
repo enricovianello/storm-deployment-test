@@ -27,6 +27,10 @@ if [ -z "$emi_repo" ]; then
 	exit 1
 fi
 echo "DEFAULT_EMI_REPO=$emi_repo"
+# Install emi repo
+execute "wget -q $emi_repo -O $emi_repo_filename"
+# Clean yum database
+execute "yum clean all"
 
 # init
 
