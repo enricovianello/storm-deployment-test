@@ -48,14 +48,14 @@ else
 fi
 
 # emi-release paths
-#emi_release="emi-release-3.0.0-2"
-#if [ $platform = "SL5" ]; then
-#	emi_release_rpm="$emi_release.el5.noarch.rpm"
-#	emi_release_remote_rpm="http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl5/x86_64/base/$emi_release.el5.noarch.rpm"
-#else 
-#	emi_release_rpm="$emi_release.el6.noarch.rpm"
-#	emi_release_remote_rpm="http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl6/x86_64/base/$emi_release.el6.noarch.rpm"	
-#fi
+emi_release="emi-release-3.0.0-2"
+if [ $platform = "SL5" ]; then
+	emi_release_rpm="$emi_release.el5.noarch.rpm"
+	emi_release_remote_rpm="http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl5/x86_64/base/$emi_release.el5.noarch.rpm"
+else 
+	emi_release_rpm="$emi_release.el6.noarch.rpm"
+	emi_release_remote_rpm="http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl6/x86_64/base/$emi_release.el6.noarch.rpm"	
+fi
 
 # storm.def location
 storm_def_file="/etc/storm/siteinfo/storm.def"
@@ -166,20 +166,16 @@ check_epel() {
 
 check_emi_release() {
 	# check if installed
-
-	# install emi-release package
-	execute 'yum -y install emi-release'
-	
-	#if rpm -qa | grep $emi_release > /dev/null 2>&1
-	#then 
-	#	# nothing to do
-	#	echo "$emi_release already installed"
-	#else 
-	#	# download & install
-	#	execute "wget $emi_release_remote_rpm"
-	#	execute "yum localinstall --nogpgcheck $emi_release_rpm -y"
-	#	echo "$emi_release installed"
-	#fi
+	if rpm -qa | grep $emi_release > /dev/null 2>&1
+	then 
+		# nothing to do
+		echo "$emi_release already installed"
+	else 
+		# download & install
+		execute "wget $emi_release_remote_rpm"
+		execute "yum localinstall --nogpgcheck $emi_release_rpm -y"
+		echo "$emi_release installed"
+	fi
 }
 
 update_egi_repo() {
