@@ -3,7 +3,7 @@
 # This script execute a clean deployment of the StoRM on a Scientific Linux os. 
 # It needs the following environment variables:
 #   PLATFORM : available values SL5 or SL6
-#   DEFAULT_EMI_REPO : the URI of the repo to use for StoRM and emi components installation
+#   ADDITIONAL_EMI_REPO : the URI of the repo to use for StoRM and emi components installation
 #
 trap "exit 1" TERM
 export TOP_PID=$$
@@ -35,12 +35,12 @@ if [ ! \( $platform = "SL5" -o $platform = "SL6" \) ]; then
 fi
 echo "PLATFORM=$platform"
 
-emi_repo=$DEFAULT_EMI_REPO
+emi_repo=$ADDITIONAL_EMI_REPO
 emi_repo_filename="/etc/yum.repos.d/test_emi.repo"
 if [ -z "$emi_repo" ]; then 
-	echo "DEFAULT_EMI_REPO not specified!"
+	echo "ADDITIONAL_EMI_REPO not specified!"
 else
-	echo "DEFAULT_EMI_REPO=$emi_repo"
+	echo "ADDITIONAL_EMI_REPO=$emi_repo"
 	# Install emi test repo
 	execute "wget -q $emi_repo -O $emi_repo_filename"
 	# Clean yum database
