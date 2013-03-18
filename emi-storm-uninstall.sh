@@ -35,13 +35,13 @@ then
 fi
 
 if [ -d $log_directory ]; then
-	execute "rm -rf /var/log/storm"
+	execute "rm -rf $log_directory"
 fi
 if [ -d $conf_directory ]; then
-	execute "rm -rf /etc/storm"
+	execute "rm -rf $conf_directory"
 fi
 if [ -d $lib_directory ]; then
-	execute "rm -rf /etc/storm"
+	execute "rm -rf $lib_directory"
 fi
 
 execute "yum erase -y emi-release"
