@@ -11,6 +11,7 @@ execute() {
 }
 
 egi_trustanchors_file="/etc/yum.repos.d/EGI-trustanchors.repo"
+emi_repo_filename="/etc/yum.repos.d/test_emi.repo"
 
 echo "StoRM 1.11 uninstall.."
 
@@ -24,6 +25,7 @@ execute "rm -rf /etc/storm"
 execute "yum erase -y emi-release"
 execute "yum erase -y epel-release"
 execute "rm $egi_trustanchors_file"
+execute "rm $emi_repo_filename"
 execute "yum clean all"
 
 echo "StoRM 1.11 uninstall - terminated"
