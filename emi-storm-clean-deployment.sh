@@ -23,10 +23,10 @@ echo "PLATFORM=$platform"
 emi_repo=$DEFAULT_EMI_REPO
 emi_repo_filename="/etc/yum.repos.d/test_emi.repo"
 if [ -z "$emi_repo" ]; then 
-	echo "Please set the DEFAULT_EMI_REPO env variable!"
-	exit 1
+	echo "DEFAULT_EMI_REPO not specified! I'm going to use default EMI3 repo."
+else
+	echo "DEFAULT_EMI_REPO=$emi_repo"
 fi
-echo "DEFAULT_EMI_REPO=$emi_repo"
 
 # init
 
@@ -251,8 +251,10 @@ hostname=$(hostname -f)
 
 echo "StoRM 1.11 Deployment started on $hostname!"
 
-# Install emi repo
-execute "wget -q $emi_repo -O $emi_repo_filename"
+# Install emi test repo
+if [ -z "$emi_repo" ]; then 
+	execute "wget -q $emi_repo -O $emi_repo_filename"
+fi
 # Clean yum database
 execute "yum clean all"
 
