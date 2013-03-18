@@ -330,6 +330,6 @@ base_configuration $storm_def_file
 add_tape_storage_area $storm_def_file
 
 # execute yaim
-#do_yaim $storm_def_file
+do_yaim $storm_def_file
 
 echo "StoRM 1.11 Deployment finished!"
