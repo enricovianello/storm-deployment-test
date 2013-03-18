@@ -252,7 +252,7 @@ hostname=$(hostname -f)
 echo "StoRM 1.11 Deployment started on $hostname!"
 
 # Install emi test repo
-if [ -z "$emi_repo" ]; then 
+if [ !-z "$emi_repo" ]; then 
 	execute "wget -q $emi_repo -O $emi_repo_filename"
 fi
 # Clean yum database
