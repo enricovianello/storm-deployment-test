@@ -277,10 +277,10 @@ add_tape_storage_area() {
 	echo "linenum=$linenum"
 	
 	echo "delete line $linenum"
-	execute "awk -v n=$linenum 'NR==n {next} {print}' $output_file > $output_file.tmp"
-	execute "mv $output_file.tmp $output_file"
-	execute "awk -v n=$linenum -v s=$newriga 'NR==n { print s } 1' $output_file > $output_file.tmp"
-	execute "mv $output_file.tmp $output_file"
+	awk -v n=$linenum 'NR==n {next} {print}' $output_file > $output_file.tmp
+	mv $output_file.tmp $output_file
+	awk -v "n=$linenum" -v "s=$newriga" 'NR==n { print s } 1' $output_file > $output_file.tmp
+	mv $output_file.tmp $output_file
 		
 	echo "adding 'tape' storage area details..."
 	echo "STORM_TAPE_VONAME=testers.eu-emi.eu" >> $output_file
