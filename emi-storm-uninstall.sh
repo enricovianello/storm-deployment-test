@@ -15,6 +15,7 @@ emi_repo_filename="/etc/yum.repos.d/test_emi.repo"
 
 log_directory="/var/log/storm"
 conf_directory="/etc/storm"
+lib_directory="/var/lib/storm"
 
 echo "StoRM 1.11 uninstall.."
 
@@ -37,6 +38,9 @@ if [ -d $log_directory ]; then
 	execute "rm -rf /var/log/storm"
 fi
 if [ -d $conf_directory ]; then
+	execute "rm -rf /etc/storm"
+fi
+if [ -d $lib_directory ]; then
 	execute "rm -rf /etc/storm"
 fi
 
