@@ -8,6 +8,21 @@
 trap "exit 1" TERM
 export TOP_PID=$$
 
+execute_no_check(){
+  echo "[root@`hostname` ~]# $1"
+  eval "$1"
+}
+
+execute() {
+  echo "[root@`hostname` ~]# $1"
+  eval "$1"
+  exit_status=$?
+  if [ $exit_status -ne 0 ]; then
+	echo "Deployment failed"; 
+	kill -s TERM $TOP_PID
+  fi
+}
+
 # check env variables
 platform=$PLATFORM
 if [ -z "$platform" ]; then 
@@ -23,9 +38,13 @@ echo "PLATFORM=$platform"
 emi_repo=$DEFAULT_EMI_REPO
 emi_repo_filename="/etc/yum.repos.d/test_emi.repo"
 if [ -z "$emi_repo" ]; then 
-	echo "DEFAULT_EMI_REPO not specified! I'm going to use default EMI3 repo."
+	echo "DEFAULT_EMI_REPO not specified!"
 else
 	echo "DEFAULT_EMI_REPO=$emi_repo"
+	# Install emi test repo
+	execute "wget -q $emi_repo -O $emi_repo_filename"
+	# Clean yum database
+	execute "yum clean all"
 fi
 
 # init
@@ -60,20 +79,6 @@ fi
 # storm.def location
 storm_def_file="/etc/storm/siteinfo/storm.def"
 
-execute_no_check(){
-  echo "[root@`hostname` ~]# $1"
-  eval "$1"
-}
-
-execute() {
-  echo "[root@`hostname` ~]# $1"
-  eval "$1"
-  exit_status=$?
-  if [ $exit_status -ne 0 ]; then
-	echo "Deployment failed"; 
-	kill -s TERM $TOP_PID
-  fi
-}
 
 set_users() {
 	# storm user
@@ -160,6 +165,7 @@ check_epel() {
 		# download & install
 		execute "wget $epel_release_rpm"
 		execute "yum localinstall --nogpgcheck $epel_release.noarch.rpm -y"
+		execute "rm $epel_release_rpm"
 		echo "$epel_release installed"
 	fi
 }
@@ -174,6 +180,7 @@ check_emi_release() {
 		# download & install
 		execute "wget $emi_release_remote_rpm"
 		execute "yum localinstall --nogpgcheck $emi_release_rpm -y"
+		execute "rm $emi_release_remote_rpm"
 		echo "$emi_release installed"
 	fi
 }
@@ -250,14 +257,6 @@ do_yaim() {
 hostname=$(hostname -f)
 
 echo "StoRM 1.11 Deployment started on $hostname!"
-
-# Install emi test repo
-if [ -z "$emi_repo" ]; then
-else
-	execute "wget -q $emi_repo -O $emi_repo_filename"
-fi
-# Clean yum database
-execute "yum clean all"
 
 # add storm and gridhttps users
 set_users
