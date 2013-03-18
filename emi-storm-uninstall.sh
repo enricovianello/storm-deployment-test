@@ -21,3 +21,5 @@ execute "rm -rf /var/log/storm"
 execute "rm -rf /etc/storm"
 execute "yum erase -y emi-release"
 execute "yum erase -y epel-release"
+
+echo "StoRM 1.11 uninstall - terminated"
