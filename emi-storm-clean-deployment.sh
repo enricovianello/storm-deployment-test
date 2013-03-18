@@ -165,7 +165,7 @@ check_epel() {
 		# download & install
 		execute "wget $epel_release_rpm"
 		execute "yum localinstall --nogpgcheck $epel_release.noarch.rpm -y"
-		execute "rm $epel_release_rpm"
+		execute "rm $epel_release.noarch.rpm"
 		echo "$epel_release installed"
 	fi
 }
@@ -180,7 +180,7 @@ check_emi_release() {
 		# download & install
 		execute "wget $emi_release_remote_rpm"
 		execute "yum localinstall --nogpgcheck $emi_release_rpm -y"
-		execute "rm $emi_release_remote_rpm"
+		execute "rm $emi_release_rpm"
 		echo "$emi_release installed"
 	fi
 }
