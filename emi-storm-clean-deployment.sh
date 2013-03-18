@@ -89,7 +89,9 @@ set_users() {
 		echo "user storm exists with uid = $storm_uid"
 	else
 		#not exists: create
+		echo "user storm does not exist"
 		execute "useradd -M storm"
+		echo "user storm created"
 	fi
 	if [ -d "/var/log/storm" ]; then
 		execute "chown -R storm:storm /var/log/storm"
@@ -100,7 +102,8 @@ set_users() {
 	# gridhttps user
 	if id -u gridhttps >/dev/null 2>&1
 	then
-		echo "user gridhttps exists"
+		local gridhttps_uid=$(id -u gridhttps);
+		echo "user gridhttps exists with uid = $gridhttpsuid"
 	else
 		echo "user gridhttps does not exist"
 		execute "useradd gridhttps -M -G storm"
