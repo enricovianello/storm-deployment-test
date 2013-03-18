@@ -10,6 +10,8 @@ execute() {
   fi
 }
 
+egi_trustanchors_file="/etc/yum.repos.d/EGI-trustanchors.repo"
+
 echo "StoRM 1.11 uninstall.."
 
 execute "yum erase -y storm-xmlrpc-c storm-xmlrpc-c-client emi-storm-gridhttps-mp storm-dynamic-info-provider storm-globus-gridftp-server yaim-storm storm-gridhttps-server emi-storm-frontend-mp storm-backend-server emi-storm-backend-mp storm-frontend-server emi-storm-globus-gridftp-mp storm-gridhttps-plugin storm-pre-assembled-configuration"
@@ -21,5 +23,7 @@ execute "rm -rf /var/log/storm"
 execute "rm -rf /etc/storm"
 execute "yum erase -y emi-release"
 execute "yum erase -y epel-release"
+execute "rm $egi_trustanchors_file"
+execute "yum clean all"
 
 echo "StoRM 1.11 uninstall - terminated"
