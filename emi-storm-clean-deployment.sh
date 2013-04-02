@@ -147,6 +147,11 @@ check_acl() {
 	fi
 }
 
+check_libacl() {
+	execute "yum install -y libacl"
+	echo "libacl installed"
+}
+
 check_attr() {
 	if ! type "getfattr" > /dev/null 2>&1
 	then
@@ -200,6 +205,8 @@ check_prerequisites() {
 	check_keys $hostkey_path $hostcert_path
 	# check if acl is installed
 	check_acl
+	# check if libacl is installed
+	check_libacl
 	# check if attr is installed
 	check_attr
 	# check if epel-release is installed, in case install
