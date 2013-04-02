@@ -223,6 +223,9 @@ check_prerequisites() {
 install_all() {
 	# ca-policy-egi-core
 	execute "yum install -y ca-policy-egi-core"
+	# work-around native libs
+	execute "wget http://os-server.cnaf.infn.it/distro/Storage/GPFS-pkg/gpfs.base-3.4.0-17.x86_64.rpm"
+	execute "yum --nogpgcheck -y localinstall gpfs.base-3.4.0-17.x86_64.rpm"
 	# StoRM metapackages
 	execute "yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp emi-storm-gridhttps-mp"
 	# StoRM pre-assembled configuration
