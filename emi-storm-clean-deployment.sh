@@ -206,7 +206,6 @@ configure_storm() {
     local branch="master"
     local siteinfo_dir="/etc/storm/siteinfo"
     execute "mkdir -p $siteinfo_dir/vo.d"
-    execute "wget $storm_deployment_repo/$branch/siteinfo/vo.d/dteam -O $siteinfo_dir/vo.d/dteam"
     execute "wget $storm_deployment_repo/$branch/siteinfo/vo.d/testers.eu-emi.eu -O $siteinfo_dir/vo.d/testers.eu-emi.eu"
     execute "wget $storm_deployment_repo/$branch/siteinfo/storm.def -O $siteinfo_dir/storm.def"
     execute "wget $storm_deployment_repo/$branch/siteinfo/storm-users.conf -O $siteinfo_dir/storm-users.conf"
