@@ -29,10 +29,12 @@ if [ -z "$platform" ]; then
 	echo "Please set the PLATFORM env variable! Available values: SL5 or SL6"
 	exit 1
 fi
+
 if [ ! \( $platform == "SL5" -o $platform == "SL6" \) ]; then
 	echo "PLATFORM value '$platform' not valid"
 	exit 1
 fi
+
 echo "PLATFORM=$platform"
 
 extra_repo=$ADDITIONAL_REPO
@@ -210,7 +212,7 @@ install_storm() {
 
 configure_storm() {
     # download configuration files
-    local storm_deployment_repo="https://raw.github.com/enricovianello/storm-deployment-test"
+    local storm_deployment_repo="https://raw.github.com/italiangrid/storm-deployment-test"
     local branch="master"
     local siteinfo_dir="/etc/storm/siteinfo"
     execute "mkdir -p $siteinfo_dir/vo.d"
@@ -219,22 +221,12 @@ configure_storm() {
     execute "wget $storm_deployment_repo/$branch/siteinfo/storm-users.conf -O $siteinfo_dir/storm-users.conf"
     execute "wget $storm_deployment_repo/$branch/siteinfo/storm-groups.conf -O $siteinfo_dir/storm-groups.conf"
     execute "wget $storm_deployment_repo/$branch/siteinfo/storm-wn-list.conf -O $siteinfo_dir/storm-wn-list.conf"
-    # set backend hostname
-    replace_file_key_value $local_storm_def "STORM_BACKEND_HOST" $hostname
-    echo "set STORM_BACKEND_HOST as $hostname"
     # set java location on SL6
     if [ $platform == "SL6" ]; then
         local java_location="\/usr\/lib\/jvm\/java"
         replace_file_key_value $local_storm_def "JAVA_LOCATION" $java_location
         echo "set JAVA_LOCATION as $java_location"
     fi
-    # set gridhttps uid and gid
-    local gridhttps_uid=$(id -u gridhttps)
-    replace_file_key_value $local_storm_def "STORM_GRIDHTTPS_SERVER_USER_UID" $gridhttps_uid
-    echo "set STORM_GRIDHTTPS_SERVER_USER_UID as $gridhttps_uid"
-    local gridhttps_gid=$(id -g gridhttps)
-    replace_file_key_value $local_storm_def "STORM_GRIDHTTPS_SERVER_GROUP_UID" $gridhttps_gid
-    echo "set STORM_GRIDHTTPS_SERVER_GROUP_UID as $gridhttps_gid"
 }
 
 replace_file_key_value() {
@@ -249,11 +241,10 @@ do_yaim() {
     execute "/opt/glite/yaim/bin/yaim -c -d 6 -s $local_storm_def $profiles"
 }
 
-
 # hostname
 hostname=$(hostname -f)
 
-echo "StoRM 1.11 Deployment started on $hostname!"
+echo "StoRM Deployment started on $hostname!"
 
 # add storm and gridhttps users
 set_users
@@ -282,5 +273,4 @@ configure_storm
 # execute yaim
 do_yaim
 
-echo "StoRM 1.12 Deployment finished!"
-
+echo "StoRM Deployment finished!"
