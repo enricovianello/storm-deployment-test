@@ -189,8 +189,16 @@ update_repositories() {
 }
 
 install_igi_test_ca() {
-	execute "wget $remote_igi_test_ca_rpm" 
-	execute "rpm -ivh $local_igi_test_ca_rpm"
+	# check if installed
+    	if rpm -qa | grep "igi-test-ca-1.0.2-2.noarch" > /dev/null 2>&1
+    	then
+        	# nothing to do
+        	echo "$local_igi_test_ca_rpm already installed"
+    	else
+		echo "$local_igi_test_ca_rpm not installed"
+		execute "wget $remote_igi_test_ca_rpm" 
+		execute "rpm -ivh $local_igi_test_ca_rpm"
+	fi
 }
 
 install_storm() {
