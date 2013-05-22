@@ -1,3 +1,5 @@
+BDII_HOST="emitb-bdii-site.cern.ch"
+
 USERS_CONF=/etc/storm/siteinfo/storm-users.conf
 GROUPS_CONF=/etc/storm/siteinfo/storm-groups.conf
 
