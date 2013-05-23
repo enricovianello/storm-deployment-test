@@ -274,3 +274,4 @@ configure_storm
 do_yaim
 
 echo "StoRM Deployment finished!"
+exit 0
