@@ -49,6 +49,9 @@ else
 	emi_release_remote_rpm="http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl6/x86_64/base/$emi_release.el6.noarch.rpm"
 fi
 
+# storm.def locations
+local_storm_def="/etc/storm/siteinfo/storm.def"
+
 update_storm() {
     execute "yum update -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp emi-storm-gridhttps-mp"
 }
