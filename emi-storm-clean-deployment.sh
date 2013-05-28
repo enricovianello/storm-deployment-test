@@ -192,7 +192,7 @@ update_repositories() {
 
 install_igi_test_ca() {
 	# check if installed
-    	if rpm -qa | grep "igi-test-ca-1.0.2-2.noarch" > /dev/null 2>&1
+    	if rpm -qa | grep "igi-test-ca-1.0.2-2" > /dev/null 2>&1
     	then
         	# nothing to do
         	echo "$local_igi_test_ca_rpm already installed"
