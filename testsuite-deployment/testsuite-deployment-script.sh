@@ -1,17 +1,9 @@
-#!/bin/sh
-
-#  testsuite-deployment-script.sh
-#  
-#
-#  Created by Enrico Vianello on 27/05/13.
-#
-
 #!/bin/bash
 
-# This script execute a clean deployment of the StoRM on a Scientific Linux os.
+# This script execute a clean deployment of the StoRM testsuite environment on a Scientific Linux os.
 # It needs the following environment variables:
 #   PLATFORM : available values SL5 or SL6
-#   ADDITIONAL_REPO : the URI of the repo to use for StoRM and emi components installation
+#   ADDITIONAL_REPO : (optional) the URI of the repo to use for StoRM and emi components installation
 #
 
 trap "exit 1" TERM
@@ -154,10 +146,11 @@ install_robot_framework() {
 }
 
 install_all() {
-    # ca-policy-egi-core
+    
+    execute "yum install -y git"
     execute "yum install -y ca-policy-egi-core"
     execute "yum install -y globus-gass-copy-progs"
-    exectue "yum install -y emi-storm-srm-client-mp"
+    execute "yum install -y emi-storm-srm-client-mp"
     execute "yum install -y dcache-srmclient"
     execute "yum install -y lcg-util"
     execute "yum install -y voms-clients"
@@ -228,9 +221,6 @@ install_all
 # configure voms clients
 configure_voms_clients
 
-#user=$(whoami)
-#uid=$(id -u $user)
-#execute "export X509_USER_PROXY="/tmp/x509up_u$uid"
-
 echo "StoRM-testsuite deployment finished!"
+echo "** REMEMBER ** to set your environment variable X509_USER_PROXY before launching the testsuite"
 exit 0
