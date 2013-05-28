@@ -157,7 +157,7 @@ install_all() {
     # ca-policy-egi-core
     execute "yum install -y ca-policy-egi-core"
     execute "yum install -y globus-gass-copy-progs"
-    exectue "yum install -y storm-srm-client"
+    exectue "yum install -y emi-storm-srm-client-mp"
     execute "yum install -y dcache-srmclient"
     execute "yum install -y lcg-util"
     execute "yum install -y voms-clients"
@@ -168,12 +168,16 @@ install_all() {
 configure_voms_clients(){
 
     # Setup certificate for voms-proxy-init test
-    execute "mkdir -p $HOME/.globus"
+    if [ ! -d "$HOME/.globus" ]; then
+	execute "mkdir -p $HOME/.globus"
+    fi
     execute "cp /usr/share/igi-test-ca/test0.cert.pem $HOME/.globus/usercert.pem"
     execute "cp /usr/share/igi-test-ca/test0.key.pem $HOME/.globus/userkey.pem"
     execute "chmod 600 $HOME/.globus/usercert.pem"
     execute "chmod 400 $HOME/.globus/userkey.pem"
-    execute "mkdir -p /etc/grid-security/vomsdir"
+    if [ ! -d "/etc/grid-security/vomsdir" ]; then
+	execute "mkdir -p /etc/grid-security/vomsdir"
+    fi
     execute "cp /etc/grid-security/hostcert.pem /etc/grid-security/vomsdir"
 
     # Setup vomsdir & vomses
@@ -186,10 +190,10 @@ configure_voms_clients(){
     if [ ! -d "/etc/grid-security/vomsdir/testers.eu-emi.eu" ]; then
 	execute "mkdir /etc/grid-security/vomsdir/testers.eu-emi.eu"
     fi
-    execute "wget https://raw.github.com/italiangrid/storm-deployment-test/master/testsuite-deployment/emitestbed01.cnaf.infn.it.lsc -O /etc/grid-security/vomsdir/testers.eu-emi.eu/emitestbed01.cnaf.infn.it"
-    execute "wget https://raw.github.com/italiangrid/storm-deployment-test/master/testsuite-deployment/emitestbed01.cnaf.infn.it.lsc -O /etc/grid-security/vomsdir/testers.eu-emi.eu/emitestbed07.cnaf.infn.it"
+    execute "wget https://raw.github.com/italiangrid/storm-deployment-test/master/testsuite-deployment/emitestbed01.cnaf.infn.it.lsc -O /etc/grid-security/vomsdir/testers.eu-emi.eu/emitestbed01.cnaf.infn.it.lsc"
+    execute "wget https://raw.github.com/italiangrid/storm-deployment-test/master/testsuite-deployment/emitestbed07.cnaf.infn.it.lsc -O /etc/grid-security/vomsdir/testers.eu-emi.eu/emitestbed07.cnaf.infn.it.lsc"
     # test basic voms-proxy-init command
-    execute "echo 'pass' | voms-proxy-init --pwstdin --cert .globus/usercert.pem --key .globus/userkey.pem"
+    execute "echo 'pass' | voms-proxy-init --pwstdin --cert $HOME/.globus/usercert.pem --key $HOME/.globus/userkey.pem"
 
     echo "VOMS clients succesfully deployed"
 }
@@ -223,6 +227,10 @@ install_all
 
 # configure voms clients
 configure_voms_clients
+
+#user=$(whoami)
+#uid=$(id -u $user)
+#execute "export X509_USER_PROXY="/tmp/x509up_u$uid"
 
 echo "StoRM-testsuite deployment finished!"
 exit 0
