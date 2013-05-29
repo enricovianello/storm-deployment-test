@@ -8,5 +8,3 @@ export PATH=$PATH:/opt/d-cache/srm/bin
 echo "X509_USER_PROXY=$X509_USER_PROXY"
 echo "SRM_PATH=$SRM_PATH"
 echo "PATH=$PATH"
-
-exit 0
