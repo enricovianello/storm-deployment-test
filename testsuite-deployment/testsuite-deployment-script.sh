@@ -140,6 +140,8 @@ install_all() {
 	install_emi_release
 	# check if igi-test-ca is installed, in case install
 	install_igi_test_ca
+	# java
+	execute "yum install -y java-1.6.0-openjdk"
 	# git
 	execute "yum install -y git"
 	# openldap-clients
