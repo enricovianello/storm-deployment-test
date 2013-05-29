@@ -142,6 +142,8 @@ install_all() {
 	install_igi_test_ca
 	# git
 	execute "yum install -y git"
+	# openldap-clients
+	execute "yum install -y openldap-clients"
 	# ca-policy-egi-core
 	execute "yum install -y ca-policy-egi-core"
 	# globus-gass-copy-progs
