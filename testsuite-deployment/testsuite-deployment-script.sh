@@ -69,14 +69,30 @@ else
 	emi_release_remote_rpm="http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl6/x86_64/base/$emi_release.el6.noarch.rpm"
 fi
 
-#igi-test-ca rpm
+#igi-test-ca remote rpm
 remote_igi_test_ca_rpm="http://radiohead.cnaf.infn.it:9999/job/test-ca/os=SL5_x86_64/lastSuccessfulBuild/artifact/igi-test-ca/rpmbuild/RPMS/noarch/igi-test-ca-1.0.2-2.noarch.rpm"
-local_igi_test_ca_rpm="igi-test-ca-1.0.2-2.noarch.rpm";
 
-# robot framework
-
-robot_framework_file="robotframework-2.7.7"
+# robot framework remote tar.gz
 remote_robot_framework_targz="https://robotframework.googlecode.com/files/robotframework-2.7.7.tar.gz"
+
+# dcache srm client remote rpm
+dcahe_srmclient_remote_rpm="http://www.dcache.org/downloads/1.9/srm/dcache-srmclient-1.9.5-23.noarch.rpm"
+
+update_repositories() {
+	# update egi repo
+	execute "wget $egi_trustanchors_repo -O $egi_trustanchors_file"
+	# additional repo
+	if [ ! -z "$extra_repo" ]; then
+		echo "ADDITIONAL_REPO=$extra_repo"
+		local extra_repo_filename=$(basename "$extra_repo")
+		local extra_repo_extension="${extra_repo_filename##*.}"
+		extra_repo_filename="${extra_repo_filename%.*}"
+		# Install additional test repo
+		execute "wget -q $extra_repo -O /etc/yum.repos.d/$extra_repo_filename.$extra_repo_extension"
+	fi
+	# refresh yum
+	execute "yum clean all"
+}
 
 install_epel() {
 	# check if installed
@@ -108,54 +124,48 @@ install_emi_release() {
 	fi
 }
 
-update_repositories() {
-	# update egi repo
-	execute "wget $egi_trustanchors_repo -O $egi_trustanchors_file"
-	# additional repo
-	if [ ! -z "$extra_repo" ]; then
-		echo "ADDITIONAL_REPO=$extra_repo"
-		local extra_repo_filename=$(basename "$extra_repo")
-		local extra_repo_extension="${extra_repo_filename##*.}"
-		extra_repo_filename="${extra_repo_filename%.*}"
-		# Install additional test repo
-		execute "wget -q $extra_repo -O /etc/yum.repos.d/$extra_repo_filename.$extra_repo_extension"
-	fi
-	# refresh yum
-	execute "yum clean all"
-}
-
 install_igi_test_ca() {
-	# check if installed
 	if rpm -qa | grep "igi-test-ca-1.0.2-2" > /dev/null 2>&1
 	then
-		# nothing to do
-		echo "$local_igi_test_ca_rpm already installed"
+		echo "igi-test-ca-1.0.2-2 already installed"
 	else
-		echo "$local_igi_test_ca_rpm not installed"
-		execute "wget $remote_igi_test_ca_rpm"
-		execute "rpm -ivh $local_igi_test_ca_rpm"
+		execute "wget $remote_igi_test_ca_rpm -O igi-test-ca.rpm"
+		execute "rpm -ivh igi-test-ca.rpm"
+		execute "rm igi-test-ca.rpm"
 	fi
-}
-
-install_robot_framework() {
-	execute "cd"
-	execute "wget $remote_robot_framework_targz"
-	execute "tar -xzf $robot_framework_file.tar.gz"
-	execute "cd $robot_framework_file"
-	execute "python setup.py install"
 }
 
 install_all() {
-
+	# check if epel-release is installed, in case install
+	install_epel
+	# check if emi-release is installed, in case install
+	install_emi_release
+	# check if igi-test-ca is installed, in case install
+	install_igi_test_ca
+	# git
 	execute "yum install -y git"
+	# ca-policy-egi-core
 	execute "yum install -y ca-policy-egi-core"
+	# globus-gass-copy-progs
 	execute "yum install -y globus-gass-copy-progs"
+	# clientSRM
 	execute "yum install -y emi-storm-srm-client-mp"
-	execute "yum install -y dcache-srmclient"
+	# lcg-utils
 	execute "yum install -y lcg-util"
+	# voms-clients
 	execute "yum install -y voms-clients"
+	# dcache-srmclient
+	execute "wget $dcahe_srmclient_remote_rpm -O $HOME/dcache-srmclient.rpm"
+	execute "yum localinstall -y --nogpgcheck $HOME/dcache-srmclient.rpm"
+	execute "rm $HOME/dcache-srmclient.rpm"
+	# robot-framework
 	execute "yum install -y python"
-	install_robot_framework
+	execute "wget $remote_robot_framework_targz -O $HOME/robot-framework.tar.gz"
+	execute "tar -xzf $HOME/robot-framework.tar.gz"
+	execute "cd $HOME/robot-framework"
+	execute "python setup.py install"
+	execute "rm -rf $HOME/robot-framework"
+	execute "rm $HOME/robot-framework.tar.gz"
 }
 
 configure_voms_clients(){
@@ -202,17 +212,8 @@ hostname=$(hostname -f)
 
 echo "StoRM-testsuite deployment started on $hostname!"
 
-# check if epel-release is installed, in case install
-install_epel
-
-# check if emi-release is installed, in case install
-install_emi_release
-
 # add repositories
 update_repositories
-
-# install igi-test-ca
-install_igi_test_ca
 
 # install all
 install_all
