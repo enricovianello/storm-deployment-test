@@ -104,7 +104,6 @@ install_epel() {
 		# download & install
 		execute "wget $epel_release_rpm"
 		execute "yum localinstall --nogpgcheck $epel_release.noarch.rpm -y"
-		execute "rm $epel_release.noarch.rpm"
 		echo "$epel_release installed"
 	fi
 }
@@ -119,7 +118,6 @@ install_emi_release() {
 		# download & install
 		execute "wget $emi_release_remote_rpm"
 		execute "yum localinstall --nogpgcheck $emi_release_rpm -y"
-		execute "rm $emi_release_rpm"
 		echo "$emi_release installed"
 	fi
 }
@@ -131,7 +129,6 @@ install_igi_test_ca() {
 	else
 		execute "wget $remote_igi_test_ca_rpm -O igi-test-ca.rpm"
 		execute "rpm -ivh igi-test-ca.rpm"
-		execute "rm igi-test-ca.rpm"
 	fi
 }
 
@@ -157,15 +154,12 @@ install_all() {
 	# dcache-srmclient
 	execute "wget $dcahe_srmclient_remote_rpm -O $HOME/dcache-srmclient.rpm"
 	execute "yum localinstall -y --nogpgcheck $HOME/dcache-srmclient.rpm"
-	execute "rm $HOME/dcache-srmclient.rpm"
 	# robot-framework
 	execute "yum install -y python"
 	execute "wget $remote_robot_framework_targz -O $HOME/robot-framework.tar.gz"
 	execute "tar -xzf $HOME/robot-framework.tar.gz"
 	execute "cd $HOME/robot-framework"
 	execute "python setup.py install"
-	execute "rm -rf $HOME/robot-framework"
-	execute "rm $HOME/robot-framework.tar.gz"
 }
 
 configure_voms_clients(){
