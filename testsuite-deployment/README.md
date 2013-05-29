@@ -22,7 +22,21 @@ sh testsuite-deployment-script.sh
 
 ### Use
 
-Login with your user and set the needed environment variables:
+Login with your user.
+Create or make sure that _globus_ directory exists:
+
+```bash
+mkdir $HOME/.globus
+```
+
+If globus directory exists and contains your personal cert and key, do a backup of them because storm-testsuite will overwrite your credentials:
+
+```bash
+cp $HOME/.globus/usercert.pem $HOME/.globus/usercert.pem.backup
+cp $HOME/.globus/userkey.pem $HOME/.globus/userkey.pem.backup
+```
+
+Set the needed environment variables:
 
 ```bash
 wget https://raw.github.com/italiangrid/storm-deployment-test/master/testsuite-deployment/configure-environment-vars.sh
