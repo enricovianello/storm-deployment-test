@@ -46,7 +46,7 @@ source configure-environment-vars.sh
 Download the run the storm-testsuite by specifying the hostname of your BackEnd:
 
 ```bash
-git clone https://github.com/italiangrid/storm-deployment-test.git
+git clone https://github.com/italiangrid/storm-testsuite.git
 cd storm-testsuite
 pybot --variable backEndHost:<hostname> tests/
 ```
