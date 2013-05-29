@@ -73,7 +73,8 @@ fi
 remote_igi_test_ca_rpm="http://radiohead.cnaf.infn.it:9999/job/test-ca/os=SL5_x86_64/lastSuccessfulBuild/artifact/igi-test-ca/rpmbuild/RPMS/noarch/igi-test-ca-1.0.2-2.noarch.rpm"
 
 # robot framework remote tar.gz
-remote_robot_framework_targz="https://robotframework.googlecode.com/files/robotframework-2.7.7.tar.gz"
+robot_framework_file="robotframework-2.7.7"
+remote_robot_framework_targz="https://robotframework.googlecode.com/files/$robot_framework_file.tar.gz"
 
 # dcache srm client remote rpm
 dcahe_srmclient_remote_rpm="http://www.dcache.org/downloads/1.9/srm/dcache-srmclient-1.9.5-23.noarch.rpm"
@@ -155,11 +156,11 @@ install_all() {
 	execute "wget $dcahe_srmclient_remote_rpm -O $HOME/dcache-srmclient.rpm"
 	execute "yum localinstall -y --nogpgcheck $HOME/dcache-srmclient.rpm"
 	# robot-framework
-	execute "yum install -y python"
-	execute "wget $remote_robot_framework_targz -O $HOME/robot-framework.tar.gz"
-	execute "tar -xzf $HOME/robot-framework.tar.gz"
-	execute "cd $HOME/robot-framework"
-	execute "python setup.py install"
+        execute "yum install -y python"
+        execute "wget $remote_robot_framework_targz -O $HOME/$robot_framework_file.tar.gz"
+        execute "tar -xzf $HOME/$robot_framework_file.tar.gz"
+        execute "cd $HOME/$robot_framework_file"
+        execute "python setup.py install"
 }
 
 configure_voms_clients(){
