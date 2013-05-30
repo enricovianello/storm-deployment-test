@@ -160,11 +160,11 @@ install_all() {
 	execute "wget $dcahe_srmclient_remote_rpm -O $HOME/dcache-srmclient.rpm"
 	execute "yum localinstall -y --nogpgcheck $HOME/dcache-srmclient.rpm"
 	# robot-framework
-        execute "yum install -y python"
-        execute "wget $remote_robot_framework_targz -O $HOME/$robot_framework_file.tar.gz"
-        execute "tar -xzf $HOME/$robot_framework_file.tar.gz"
-        execute "cd $HOME/$robot_framework_file"
-        execute "python setup.py install"
+	execute "yum install -y python"
+	execute "wget $remote_robot_framework_targz -O $HOME/$robot_framework_file.tar.gz"
+	execute "tar -xzf $HOME/$robot_framework_file.tar.gz"
+	execute "cd $HOME/$robot_framework_file"
+	execute "python setup.py install"
 }
 
 configure_voms_clients(){
