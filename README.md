@@ -34,3 +34,16 @@ So, for example, to deploy the latest EMI3 StoRM packages on a SL6 you had to do
 	source setup-emi3-devel-sl6.sh
 	wget https://raw.github.com/italiangrid/storm-deployment-test/master/emi-storm-clean-deployment.sh
 	sh emi-storm-clean-deployment.sh
+	
+If you want to test the upgrade from EMI2 StoRM to the EMI3 version, on SL5, do the following commands:
+
+	wget https://raw.github.com/italiangrid/storm-deployment-test/master/setup-scripts/SL5/setup-emi2-sl5.sh
+	source setup-emi2-sl5.sh
+	wget https://raw.github.com/italiangrid/storm-deployment-test/master/emi-storm-clean-deployment.sh
+	sh emi-storm-clean-deployment.sh
+	wget https://raw.github.com/italiangrid/storm-deployment-test/master/setup-scripts/SL5/setup-emi3-sl5.sh
+	source setup-emi3-sl5.sh
+	wget https://raw.github.com/italiangrid/storm-deployment-test/master/emi2-to-emi3-upgrade-script.sh
+	sh emi2-to-emi3-upgrade-script.sh
+	
+
