@@ -16,8 +16,8 @@ Using these scripts is very simple. First of all you have to download the approp
 or building it on your own, knowing that the available variables are the following:
 
 * ADDITIONAL\_REPO: the URI of a different repo to add for StoRM and EMI components installation
-* EMI\_RELEASE\_REMOTE\_RPM (**mandatory**): the URI of the EMI release rpm
-* EPEL\_RELEASE\_REMOTE\_RPM (**mandatory**): the URI of the EPEL release rpm
+* EMI\_RELEASE\_REMOTE\_RPM (mandatory): the URI of the EMI release rpm
+* EPEL\_RELEASE\_REMOTE\_RPM (mandatory): the URI of the EPEL release rpm
 * YAIM\_CONFIGURATION\_FILE: the URI of the _storm.def_ file with YAIM configuration values
 * REQUIRED\_STORM\_UID: the required user-id of _storm_ user
 * REQUIRED\_STORM\_GID: the required user-gid for storm user
