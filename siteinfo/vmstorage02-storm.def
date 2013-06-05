@@ -10,7 +10,7 @@ SITE_NAME="storm-1.11.1-standalone-on-tape"
 NTP_HOSTS_IP="131.154.1.103 193.206.144.10"
 
 MYSQL_PASSWORD="storm"
-VOS="testers.eu-emi.eu dteam"
+VOS="testers.eu-emi.eu"
 
 STORM_STORAGEAREA_LIST="$VOS noauth noauth-bis igi igi-bis tape"
 
@@ -44,8 +44,6 @@ STORM_GRIDHTTPS_ENABLED=true
 STORM_GRIDHTTPS_PLUGIN_CLASSNAME=it.grid.storm.https.GhttpsHTTPSPluginInterface
 
 STORM_TESTERSEUEMIEU_ONLINE_SIZE=4
-
-STORM_DTEAM_ONLINE_SIZE=4
 
 STORM_IGI_ONLINE_SIZE=4
 STORM_IGI_VONAME="*"
