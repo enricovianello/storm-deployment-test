@@ -4,3 +4,4 @@ export EPEL_RELEASE_REMOTE_RPM="http://archives.fedoraproject.org/pub/epel/5/x86
 export REQUIRED_STORM_UID=991
 export REQUIRED_STORM_GID=991
 export YAIM_CONFIGURATION_FILE="https://raw.github.com/italiangrid/storm-deployment-test/master/siteinfo/vmstorage02-storm.def"
+export FS_TYPE="GPFS"

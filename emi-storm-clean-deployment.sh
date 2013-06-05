@@ -11,14 +11,17 @@
 #   IGI_TEST_CA_REMOTE_RPM      : the URI of the IGI-test-CA rpm
 #   EGI_TRUSTANCHORS_REPO       : the URI of the EGI-trustanchors repo
 #   JAVA_LOCATION               : specify a different java location
+#   FS_TYPE                     : values: DISK or GPFS (default: DISK)
 #
 trap "exit 1" TERM
 export TOP_PID=$$
 
 remote_siteinfo_dir="https://raw.github.com/italiangrid/storm-deployment-test/master/siteinfo"
 default_egi_trustanchors_repo="http://repository.egi.eu/sw/production/cas/1/current/repo-files/EGI-trustanchors.repo"
+default_gpfs_repo="http://radiohead.cnaf.infn.it:9999/job/repo_gpfs/3/artifact/gpfs.repo"
 default_igi_test_ca_remote_rpm="http://radiohead.cnaf.infn.it:9999/job/test-ca/os=SL5_x86_64/lastSuccessfulBuild/artifact/igi-test-ca/rpmbuild/RPMS/noarch/igi-test-ca-1.0.2-2.noarch.rpm"
 default_yaim_configuration_file="$remote_siteinfo_dir/storm.def"
+default_fs_type="DISK"
 
 execute_no_check(){
 	echo "[root@`hostname` ~]# $1"
@@ -45,6 +48,7 @@ get_environment_variables() {
     yaim_configuration_file=$YAIM_CONFIGURATION_FILE
     required_storm_uid=$REQUIRED_STORM_UID
     required_storm_gid=$REQUIRED_STORM_GID
+    fs_type=$FS_TYPE
 }
 
 check_environment_variables() {
@@ -82,6 +86,11 @@ check_environment_variables() {
     # storm uid and gid
     echo "REQUIRED_STORM_UID = $required_storm_uid"
     echo "REQUIRED_STORM_GID = $required_storm_gid"
+    # fs type
+    if [ -z "$fs_type" ]; then
+        fs_type=$default_fs_type
+    fi
+    echo "FS_TYPE = $fs_type"
 }
 
 set_users() {
@@ -167,6 +176,9 @@ update_repositories() {
     if [ ! -z "$additional_repo" ]; then
         add_repo $additional_repo
     fi
+    if [ $fs_type -eq "GPFS" ]; then
+        add_repo $default_gpfs_repo
+    fi
     # refresh yum
     execute "yum clean all"
 }
@@ -197,6 +209,10 @@ install_all() {
     localinstall_rpm $igi_test_ca_remote_rpm
     # ca-policy-egi-core
     execute "yum install -y ca-policy-egi-core"
+    # gpfs libraries
+    if [ $fs_type -eq "GPFS" ]; then
+        execute "yum install gpfs.base"
+    fi
     # StoRM metapackages
     execute "yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp emi-storm-gridhttps-mp"
 }
