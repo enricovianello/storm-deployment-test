@@ -2,11 +2,23 @@
 
 # This script execute a clean deployment of the StoRM on a Scientific Linux os.
 # It needs the following environment variables:
-#   PLATFORM : available values SL5 or SL6
-#   ADDITIONAL_REPO : the URI of the repo to use for StoRM and emi components installation
+#   ADDITIONAL_REPO             : the URI of the repo to use for StoRM and emi components installation
+#   EMI_RELEASE_REMOTE_RPM      : (MANDATORY) the URI of the EMI release rpm
+#   EPEL_RELEASE_REMOTE_RPM     : (MANDATORY) the URI of the EPEL release rpm
+#   YAIM_CONFIGURATION_FILE     : the URI of the 'storm.def' file with yaim configuration values
+#   REQUIRED_STORM_UID          : the required user-id for storm user
+#   REQUIRED_STORM_GID          : the required user-gid for storm user
+#   IGI_TEST_CA_REMOTE_RPM      : the URI of the IGI-test-CA rpm
+#   EGI_TRUSTANCHORS_REPO       : the URI of the EGI-trustanchors repo
+#   JAVA_LOCATION               : specify a different java location
 #
 trap "exit 1" TERM
 export TOP_PID=$$
+
+remote_siteinfo_dir="https://raw.github.com/italiangrid/storm-deployment-test/master/siteinfo"
+default_egi_trustanchors_repo="http://repository.egi.eu/sw/production/cas/1/current/repo-files/EGI-trustanchors.repo"
+default_igi_test_ca_remote_rpm="http://radiohead.cnaf.infn.it:9999/job/test-ca/os=SL5_x86_64/lastSuccessfulBuild/artifact/igi-test-ca/rpmbuild/RPMS/noarch/igi-test-ca-1.0.2-2.noarch.rpm"
+default_yaim_configuration_file="$remote_siteinfo_dir/storm.def"
 
 execute_no_check(){
 	echo "[root@`hostname` ~]# $1"
@@ -23,87 +35,86 @@ execute() {
 	fi
 }
 
-# check env variables
-platform=$PLATFORM
-if [ -z "$platform" ]; then
-	echo "Please set the PLATFORM env variable! Available values: SL5 or SL6"
-	exit 1
-fi
+get_environment_variables() {
+    additional_repo=$ADDITIONAL_REPO
+    emi_release_remote_rpm=$EMI_RELEASE_REMOTE_RPM
+    epel_release_remote_rpm=$EPEL_RELEASE_REMOTE_RPM
+    egi_trustanchors_repo=$EGI_TRUSTANCHORS_REPO
+    igi_test_ca_remote_rpm=$IGI_TEST_CA_REMOTE_RPM
+    java_location=$JAVA_LOCATION
+    yaim_configuration_file=$YAIM_CONFIGURATION_FILE
+    required_storm_uid=$REQUIRED_STORM_UID
+    required_storm_gid=$REQUIRED_STORM_GID
+}
 
-if [ ! \( $platform == "SL5" -o $platform == "SL6" \) ]; then
-	echo "PLATFORM value '$platform' not valid"
-	exit 1
-fi
-
-echo "PLATFORM=$platform"
-
-extra_repo=$ADDITIONAL_REPO
-
-# init
-
-# host's private key and public certificate
-hostcert_path="/etc/grid-security/hostcert.pem"
-hostkey_path="/etc/grid-security/hostkey.pem"
-
-# egi-trustenchors repo link and destination file path
-egi_trustanchors_repo="http://repository.egi.eu/sw/production/cas/1/current/repo-files/EGI-trustanchors.repo"
-egi_trustanchors_file="/etc/yum.repos.d/EGI-trustanchors.repo"
-
-# epel-release paths
-if [ $platform == "SL5" ]; then
-	epel_release="epel-release-5-4"
-	epel_release_rpm="http://archives.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm"
-else
-	epel_release="epel-release-6-8"
-	epel_release_rpm="http://www.nic.funet.fi/pub/mirrors/fedora.redhat.com/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
-fi
-
-# emi-release paths
-emi_release="emi-release-3.0.0-2"
-if [ $platform == "SL5" ]; then
-	emi_release_rpm="$emi_release.el5.noarch.rpm"
-	emi_release_remote_rpm="http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl5/x86_64/base/$emi_release.el5.noarch.rpm"
-else
-	emi_release_rpm="$emi_release.el6.noarch.rpm"
-	emi_release_remote_rpm="http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl6/x86_64/base/$emi_release.el6.noarch.rpm"
-fi
-
-# storm.def locations
-local_storm_def="/etc/storm/siteinfo/storm.def"
-
-#igi-test-ca rpm
-remote_igi_test_ca_rpm="http://radiohead.cnaf.infn.it:9999/job/test-ca/os=SL5_x86_64/lastSuccessfulBuild/artifact/igi-test-ca/rpmbuild/RPMS/noarch/igi-test-ca-1.0.2-2.noarch.rpm"
-local_igi_test_ca_rpm="igi-test-ca-1.0.2-2.noarch.rpm";
+check_environment_variables() {
+    # additional_repo
+    echo "ADDITIONAL_REPO = $additional_repo"
+    # emi-release
+    if [ -z "$emi_release_remote_rpm" ]; then
+        echo "Please set the EMI_RELEASE_REMOTE_RPM environment variable!"
+        exit 1
+    fi
+    echo "EMI_RELEASE_REMOTE_RPM = $emi_release_remote_rpm"
+    # epel-release
+    if [ -z "$epel_release_remote_rpm" ]; then
+        echo "Please set the EPEL_RELEASE_REMOTE_RPM environment variable!"
+        exit 1
+    fi
+    echo "EPEL_RELEASE_REMOTE_RPM = $epel_release_remote_rpm"
+    # egi-trustanchors repo
+    if [ -z "$egi_trustanchors_repo" ]; then
+        egi_trustanchors_repo=$default_egi_trustanchors_repo
+    fi
+    echo "EGI_TRUSTANCHORS_REPO = $egi_trustanchors_repo"
+    # igi-test-ca
+    if [ -z "$igi_test_ca_remote_rpm" ]; then
+        igi_test_ca_remote_rpm=$default_igi_test_ca_remote_rpm
+    fi
+    echo "IGI_TEST_CA_REMOTE_RPM = $igi_test_ca_remote_rpm"
+    # java location
+    echo "JAVA_LOCATION = $java_location"
+    # yaim configuration file
+    if [ -z "$yaim_configuration_file" ]; then
+        yaim_configuration_file=$default_yaim_configuration_file
+    fi
+    echo "YAIM_CONFIGURATION_FILE = $yaim_configuration_file"
+    # storm uid and gid
+    echo "REQUIRED_STORM_UID = $required_storm_uid"
+    echo "REQUIRED_STORM_GID = $required_storm_gid"
+}
 
 set_users() {
-	# storm user
-	if id -u storm >/dev/null 2>&1
-	then
-		#exists:
-		local storm_uid=$(id -u storm);
-		echo "user storm exists with uid = $storm_uid"
-	else
-		#not exists: create
-		echo "user storm does not exist"
-		execute "useradd -M storm"
-		echo "user storm created"
-	fi
-	if [ -d "/var/log/storm" ]; then
-		execute "chown -R storm:storm /var/log/storm"
-	fi
-	if [ -d "/etc/storm" ]; then
-		execute "chown -R storm:storm /etc/storm"
-	fi
-	# gridhttps user
-	if id -u gridhttps >/dev/null 2>&1
-	then
-		local gridhttps_uid=$(id -u gridhttps);
-		echo "user gridhttps exists with uid = $gridhttps_uid"
-	else
-		echo "user gridhttps does not exist"
-		execute "useradd gridhttps -M -G storm"
-		echo "user gridhttps created"
-	fi
+	# create storm user if not exists
+    if id -u storm >/dev/null 2>&1
+    then
+        echo "storm user already exists"
+    else
+        execute "useradd -M storm"
+    fi
+    # configure them if necessary
+    if [ ! -z $required_storm_uid ] || [ ! -z $required_storm_gid ]; then
+        local storm_uid=$(id -u storm)
+        if [ ! -z $required_storm_uid ]; then
+            if [ $storm_uid -ne $required_storm_uid ]; then
+                execute "usermod --uid $required_storm_uid storm"
+            fi
+        fi
+        local storm_gid=$(id -g storm)
+        if [ ! -z $required_storm_gid ]; then
+            if [ $storm_gid -ne $required_storm_gid ]; then
+                execute "groupmod -g $required_storm_gid storm"
+                execute "usermod --gid $required_storm_gid storm"
+            fi
+        fi
+    fi
+    # create gridhttps user if not exists
+    if id -u gridhttps >/dev/null 2>&1
+    then
+        echo "gridhttps user already exists"
+    else
+        execute "useradd gridhttps -M -G storm"
+    fi
 }
 
 check_ntpd() {
@@ -116,49 +127,20 @@ check_ntpd() {
 	fi
 }
 
-check_keys() {
-	local key=$1
-	local cert=$2
-	if [ ! -f $cert ]; then
-		echo "$cert does not exists"
+check_host_credentials() {
+    # host's private key and public certificate
+    local hostcert_path="/etc/grid-security/hostcert.pem"
+    local hostkey_path="/etc/grid-security/hostkey.pem"
+    if [ ! -f $hostcert_path ]; then
+		echo "$hostcert_path does not exists"
 		exit 1
 	fi
-    echo "$cert exists"
-    if [ ! -f $key ]; then
-        echo "$key does not exists"
+    echo "$hostcert_path exists"
+    if [ ! -f $hostkey_path ]; then
+        echo "$hostkey_path does not exists"
         exit 1
     fi
-    echo "$key exists"
-}
-
-install_epel() {
-    # check if installed
-    if rpm -qa | grep $epel_release > /dev/null 2>&1
-    then
-        # nothing to do
-        echo "$epel_release already installed"
-    else
-        # download & install
-        execute "wget $epel_release_rpm"
-        execute "yum localinstall --nogpgcheck $epel_release.noarch.rpm -y"
-        execute "rm $epel_release.noarch.rpm"
-        echo "$epel_release installed"
-    fi
-}
-
-install_emi_release() {
-    # check if installed
-    if rpm -qa | grep $emi_release > /dev/null 2>&1
-    then
-        # nothing to do
-        echo "$emi_release already installed"
-    else
-        # download & install
-        execute "wget $emi_release_remote_rpm"
-        execute "yum localinstall --nogpgcheck $emi_release_rpm -y"
-        execute "rm $emi_release_rpm"
-        echo "$emi_release installed"
-    fi
+    echo "$hostkey_path exists"
 }
 
 check_prerequisites() {
@@ -166,66 +148,77 @@ check_prerequisites() {
     # check if ntpd is running
     check_ntpd
     # check if hostkey and hostcert exist
-    check_keys $hostkey_path $hostcert_path
+    check_host_credentials
     echo "Checking pre-requisites... OK"
 }
 
+add_repo() {
+    local remote_url=$1
+    local local_repo_dir="/etc/yum.repos.d"
+    local remote_repo_filename=$(basename "$remote_url")
+    local local_repo_path="$local_repo_dir/$remote_repo_filename"
+    execute "wget -q $remote_url -O $local_repo_path"
+}
+
 update_repositories() {
-    # update egi repo
-    execute "wget $egi_trustanchors_repo -O $egi_trustanchors_file"
-    # additional repo
-    if [ -z "$extra_repo" ]; then
-        echo "ADDITIONAL_REPO not found!\n** To install last developed StoRM components' versions do:"
-        echo "On SL5:\texport ADDITIONAL_REPO=\"http://radiohead.cnaf.infn.it:9999/view/STORM/job/storm-repo_SL5/lastSuccessfulBuild/artifact/storm.repo\""
-        echo "On SL6:\texport ADDITIONAL_REPO=\"http://radiohead.cnaf.infn.it:9999/view/STORM/job/storm-repo_SL6/lastSuccessfulBuild/artifact/storm.repo\""
-    else
-        echo "ADDITIONAL_REPO=$extra_repo"
-        local extra_repo_filename=$(basename "$extra_repo")
-        local extra_repo_extension="${extra_repo_filename##*.}"
-        extra_repo_filename="${extra_repo_filename%.*}"
-        # Install additional test repo
-        execute "wget -q $extra_repo -O /etc/yum.repos.d/$extra_repo_filename.$extra_repo_extension"
+    localinstall_rpm $epel_release_remote_rpm
+    localinstall_rpm $emi_release_remote_rpm
+    add_repo $egi_trustanchors_repo
+    if [ ! -z "$additional_repo" ]; then
+        add_repo $additional_repo
     fi
     # refresh yum
     execute "yum clean all"
 }
 
-install_igi_test_ca() {
-	# check if installed
-    	if rpm -qa | grep "igi-test-ca-1.0.2-2" > /dev/null 2>&1
-    	then
-        	# nothing to do
-        	echo "$local_igi_test_ca_rpm already installed"
-    	else
-		echo "$local_igi_test_ca_rpm not installed"
-		execute "wget $remote_igi_test_ca_rpm" 
-		execute "rpm -ivh $local_igi_test_ca_rpm"
-	fi
+init_directories() {
+    local storm_conf_dir="/etc/storm"
+    # create directories
+    execute "mkdir -p $storm_conf_dir"
+    execute "mkdir -p $storm_conf_dir/siteinfo"
+    execute "mkdir -p $storm_conf_dir/siteinfo/vo.d"
+    execute "chown -R storm:storm $storm_conf_dir"
+    if [ -d "/var/log/storm" ]; then
+        execute "chown -R storm:storm /var/log/storm"
+    fi
 }
 
-install_storm() {
+localinstall_rpm() {
+    local remote_url=$1
+    local local_name=$(basename $remote_url)
+    execute "wget $remote_url -O /tmp/$local_name"
+    execute "yum localinstall --nogpgcheck -y /tmp/$local_name"
+    execute "rm -f /tmp/$local_name"
+    echo "$local_name installed!"
+}
+
+install_all() {
+    # igi-test-ca
+    localinstall_rpm $igi_test_ca_remote_rpm
     # ca-policy-egi-core
     execute "yum install -y ca-policy-egi-core"
     # StoRM metapackages
     execute "yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp emi-storm-gridhttps-mp"
 }
 
-configure_storm() {
-    # download configuration files
+configure() {
+    local siteinfo_dir="/etc/storm/siteinfo"
+    # download main configuration file
+    execute "wget $yaim_configuration_file -O $siteinfo_dir/storm.def"
+    # download vo files
     local storm_deployment_repo="https://raw.github.com/italiangrid/storm-deployment-test"
     local branch="master"
-    local siteinfo_dir="/etc/storm/siteinfo"
-    execute "mkdir -p $siteinfo_dir/vo.d"
-    execute "wget $storm_deployment_repo/$branch/siteinfo/vo.d/testers.eu-emi.eu -O $siteinfo_dir/vo.d/testers.eu-emi.eu"
-    execute "wget $storm_deployment_repo/$branch/siteinfo/storm.def -O $siteinfo_dir/storm.def"
-    execute "wget $storm_deployment_repo/$branch/siteinfo/storm-users.conf -O $siteinfo_dir/storm-users.conf"
-    execute "wget $storm_deployment_repo/$branch/siteinfo/storm-groups.conf -O $siteinfo_dir/storm-groups.conf"
-    execute "wget $storm_deployment_repo/$branch/siteinfo/storm-wn-list.conf -O $siteinfo_dir/storm-wn-list.conf"
-    # set java location on SL6
-    if [ $platform == "SL6" ]; then
-        local java_location="\/usr\/lib\/jvm\/java"
-        replace_file_key_value $local_storm_def "JAVA_LOCATION" $java_location
-        echo "set JAVA_LOCATION as $java_location"
+    execute "wget $remote_siteinfo_dir/vo.d/testers.eu-emi.eu -O $siteinfo_dir/vo.d/testers.eu-emi.eu"
+    # download storm users, groups and wn-list
+    execute "wget $remote_siteinfo_dir/storm-users.conf -O $siteinfo_dir/storm-users.conf"
+    execute "wget $remote_siteinfo_dir/storm-groups.conf -O $siteinfo_dir/storm-groups.conf"
+    execute "wget $remote_siteinfo_dir/storm-wn-list.conf -O $siteinfo_dir/storm-wn-list.conf"    
+    if [ ! -z $java_location ]; then
+        local storm_def_file="$siteinfo_dir/storm.def"
+        # delete line
+        execute "sed -i '/JAVA_LOCATION/ d' $storm_def_file"
+        # add line
+        execute "echo JAVA_LOCATION=$java_location >> $storm_def_file"
     fi
 }
 
@@ -237,8 +230,9 @@ replace_file_key_value() {
 }
 
 do_yaim() {
+    local siteinfo_dir="/etc/storm/siteinfo"
     local profiles="-n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_gridhttps"
-    execute "/opt/glite/yaim/bin/yaim -c -d 6 -s $local_storm_def $profiles"
+    execute "/opt/glite/yaim/bin/yaim -c -s $siteinfo_dir/storm.def $profiles"
 }
 
 # hostname
@@ -246,29 +240,27 @@ hostname=$(hostname -f)
 
 echo "StoRM Deployment started on $hostname!"
 
+# init from environment variables
+get_environment_variables
+check_environment_variables
+
 # add storm and gridhttps users
 set_users
 
 # check installation pre-requisites
 check_prerequisites
 
-# check if epel-release is installed, in case install
-install_epel
-
-# check if emi-release is installed, in case install
-install_emi_release
-
 # add repositories
 update_repositories
 
-# install igi-test-ca
-install_igi_test_ca
+# init directories
+init_directories
 
 # install StoRM
-install_storm
+install_all
 
 # base configuration
-configure_storm
+configure
 
 # execute yaim
 do_yaim

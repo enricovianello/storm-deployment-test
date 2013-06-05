@@ -11,15 +11,15 @@ execute() {
 }
 
 egi_trustanchors_file="/etc/yum.repos.d/EGI-trustanchors.repo"
-emi_repo_filename="/etc/yum.repos.d/test_emi.repo"
+emi_repo_filename="/etc/yum.repos.d/storm.repo"
 
 log_directory="/var/log/storm"
 conf_directory="/etc/storm"
 lib_directory="/var/lib/storm"
 
-echo "StoRM 1.11 uninstall.."
+echo "StoRM uninstall.."
 
-execute "yum erase -y storm-xmlrpc-c storm-xmlrpc-c-client emi-storm-gridhttps-mp storm-dynamic-info-provider storm-globus-gridftp-server yaim-storm storm-gridhttps-server emi-storm-frontend-mp storm-backend-server emi-storm-backend-mp storm-frontend-server emi-storm-globus-gridftp-mp storm-gridhttps-plugin storm-pre-assembled-configuration"
+execute "yum erase -y storm-xmlrpc-c storm-xmlrpc-c-client emi-storm-gridhttps-mp storm-dynamic-info-provider storm-globus-gridftp-server yaim-storm storm-gridhttps-server emi-storm-frontend-mp storm-backend-server emi-storm-backend-mp storm-frontend-server emi-storm-globus-gridftp-mp storm-gridhttps-plugin storm-pre-assembled-configuration storm-native-libs"
 
 if id -u gridhttps >/dev/null 2>&1
 then
@@ -55,4 +55,4 @@ if [ -e $emi_repo_filename ]; then
 fi
 execute "yum clean all"
 
-echo "StoRM 1.11 uninstall - terminated"
+echo "StoRM uninstall - terminated"
