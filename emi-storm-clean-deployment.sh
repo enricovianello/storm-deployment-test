@@ -39,6 +39,11 @@ execute() {
 }
 
 get_environment_variables() {
+    
+    if [ -f /root/storm-setup.sh ]; then
+    	source /root/storm-setup.sh && echo "Succesfully parsed setup file from /root/storm-setup.sh"
+    fi
+    	
     additional_repo=$ADDITIONAL_REPO
     emi_release_remote_rpm=$EMI_RELEASE_REMOTE_RPM
     epel_release_remote_rpm=$EPEL_RELEASE_REMOTE_RPM
@@ -250,6 +255,9 @@ do_yaim() {
     local profiles="-n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_gridhttps"
     execute "/opt/glite/yaim/bin/yaim -c -s $siteinfo_dir/storm.def $profiles"
 }
+
+
+
 
 # hostname
 hostname=$(hostname -f)
