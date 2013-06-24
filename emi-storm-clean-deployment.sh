@@ -181,8 +181,10 @@ update_repositories() {
     if [ ! -z "$additional_repo" ]; then
         add_repo $additional_repo
     fi
-    if [ $fs_type -eq "GPFS" ]; then
-        add_repo $default_gpfs_repo
+    if [ ! -z "$fs_type" ]; then
+        if [ $fs_type -eq "GPFS" ]; then
+        	add_repo $default_gpfs_repo
+    	fi
     fi
     # refresh yum
     execute "yum clean all"
@@ -215,8 +217,10 @@ install_all() {
     # ca-policy-egi-core
     execute "yum install -y ca-policy-egi-core"
     # gpfs libraries
-    if [ $fs_type -eq "GPFS" ]; then
-        execute "yum install gpfs.base"
+    if [ ! -z "$fs_type" ]; then
+        if [ $fs_type -eq "GPFS" ]; then
+        	execute "yum install gpfs.base"
+    	fi
     fi
     # StoRM metapackages
     execute "yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp emi-storm-gridhttps-mp"
