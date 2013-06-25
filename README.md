@@ -7,7 +7,9 @@ You can deploy on a single host a EMI2/EMI3 StoRM full installation, configured,
 
 ### Instructions
 
-Using these scripts is very simple. First of all you have to download the appropriate _setup-script_, choosing between:
+Using these deployment scripts is very simple. 
+
+First of all you have to download the appropriate _setup-script_, choosing between:
 
 * EMI3 StoRM (stable) - [SL5](https://raw.github.com/italiangrid/storm-deployment-test/master/setup-scripts/SL5/setup-emi3-sl5.sh) [SL6](https://raw.github.com/italiangrid/storm-deployment-test/master/setup-scripts/SL6/setup-emi3-sl6.sh)
 * EMI3 StoRM from developers repo (unstable) - [SL5](https://raw.github.com/italiangrid/storm-deployment-test/master/setup-scripts/SL5/setup-emi3-devel-sl5.sh) [SL6](https://raw.github.com/italiangrid/storm-deployment-test/master/setup-scripts/SL6/setup-emi3-devel-sl6.sh)
@@ -26,9 +28,17 @@ or building it on your own, knowing that the available variables are the followi
 * JAVA\_LOCATION: a different java location
 * FS\_TYPE: values are "DISK" or "GPFS" (default: DISK)
 
-Then, launch the deployment script.
+By default, the storm deployment script looks for a setup script in:
 
-So, for example, to deploy the latest EMI3 StoRM packages on a SL6 you had to do these following commands:
+	/root/storm-setup.sh
+
+If this file exists, the deployment script will source its content first of all.
+
+To launch the deployment script:
+
+	sh emi-storm-clean-deployment.sh
+	
+So, for example, to deploy the latest EMI3 StoRM packages on a SL6 you can do the following commands:
 
 	wget https://raw.github.com/italiangrid/storm-deployment-test/master/setup-scripts/SL6/setup-emi3-devel-sl6.sh
 	source setup-emi3-devel-sl6.sh
