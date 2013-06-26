@@ -26,6 +26,8 @@ execute() {
 get_environment_variables() {
     additional_repo=$ADDITIONAL_REPO
     emi_release_remote_rpm=$EMI_RELEASE_REMOTE_RPM
+    java_location=$JAVA_LOCATION
+    yaim_configuration_file=$YAIM_CONFIGURATION_FILE
 }
 
 check_environment_variables() {
@@ -37,6 +39,10 @@ check_environment_variables() {
         exit 1
     fi
     echo "EMI_RELEASE_REMOTE_RPM = $emi_release_remote_rpm"
+    # java location
+    echo "JAVA_LOCATION = $java_location"
+    # yaim configuration file
+    echo "YAIM_CONFIGURATION_FILE = $yaim_configuration_file"
 }
 
 add_repo() {
@@ -70,6 +76,21 @@ update_all() {
     execute "yum update -y"
 }
 
+configure() {
+    local siteinfo_dir="/etc/storm/siteinfo"
+    # download configuration file
+    if [ ! -z $yaim_configuration_file ]; then
+        execute "wget $yaim_configuration_file -O $siteinfo_dir/storm.def"
+    fi
+    if [ ! -z $java_location ]; then
+        local storm_def_file="$siteinfo_dir/storm.def"
+        # delete line
+        execute "sed -i '/JAVA_LOCATION/ d' $storm_def_file"
+        # add line
+        execute "echo JAVA_LOCATION=$java_location >> $storm_def_file"
+    fi
+}
+
 do_yaim() {
     local siteinfo_dir="/etc/storm/siteinfo"
     local profiles="-n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_gridhttps"
@@ -90,6 +111,9 @@ update_repositories
 
 # update StoRM
 update_all
+
+# configure
+configure
 
 # launch yaim
 do_yaim
