@@ -12,6 +12,7 @@
 #   EGI_TRUSTANCHORS_REPO       : the URI of the EGI-trustanchors repo
 #   JAVA_LOCATION               : specify a different java location
 #   FS_TYPE                     : values: DISK or GPFS (default: DISK)
+#   CREATE_GRIDHTTPS_USER	: values: true|false (default: true)
 #
 trap "exit 1" TERM
 export TOP_PID=$$
@@ -22,6 +23,7 @@ default_gpfs_repo="http://radiohead.cnaf.infn.it:9999/job/repo_gpfs/3/artifact/g
 default_igi_test_ca_remote_rpm="http://radiohead.cnaf.infn.it:9999/job/test-ca/os=SL5_x86_64/lastSuccessfulBuild/artifact/igi-test-ca/rpmbuild/RPMS/noarch/igi-test-ca-1.0.2-2.noarch.rpm"
 default_yaim_configuration_file="$remote_siteinfo_dir/storm.def"
 default_fs_type="DISK"
+default_create_gridhttps_user="true"
 
 execute_no_check(){
 	echo "[root@`hostname` ~]# $1"
@@ -54,6 +56,7 @@ get_environment_variables() {
     required_storm_uid=$REQUIRED_STORM_UID
     required_storm_gid=$REQUIRED_STORM_GID
     fs_type=$FS_TYPE
+    create_gridhttps_user=$CREATE_GRIDHTTPS_USER
 }
 
 check_environment_variables() {
@@ -96,6 +99,11 @@ check_environment_variables() {
         fs_type=$default_fs_type
     fi
     echo "FS_TYPE = $fs_type"
+    # create gridhttps user
+    if [ -z "$create_gridhttps_user" ]; then
+        create_gridhttps_user=$default_create_gridhttps_user
+    fi
+    echo "CREATE_GRIDHTTPS_USER = $create_gridhttps_user"
 }
 
 set_users() {
@@ -122,12 +130,14 @@ set_users() {
             fi
         fi
     fi
-    # create gridhttps user if not exists
-    if id -u gridhttps >/dev/null 2>&1
-    then
-        echo "gridhttps user already exists"
-    else
-        execute "useradd gridhttps -M -G storm"
+    if [ $create_gridhttps_user == "true" ]; then
+    	# create gridhttps user if not exists
+    	if id -u gridhttps >/dev/null 2>&1
+    	then
+        	echo "gridhttps user already exists"
+    	else
+        	execute "useradd gridhttps -M -G storm"
+    	fi
     fi
 }
 
