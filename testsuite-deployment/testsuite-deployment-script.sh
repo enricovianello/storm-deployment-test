@@ -9,6 +9,8 @@
 trap "exit 1" TERM
 export TOP_PID=$$
 
+dcache_srmclient_remote_rpm="http://www.dcache.org/downloads/1.9/srm/dcache-srmclient-1.9.5-23.noarch.rpm"
+
 execute_no_check(){
 	echo "[root@`hostname` ~]# $1"
 	eval "$1"
@@ -25,121 +27,94 @@ execute() {
 }
 
 # check env variables
-platform=$PLATFORM
-if [ -z "$platform" ]; then
-	echo "Please set the PLATFORM env variable! Available values: SL5 or SL6"
-	exit 1
-fi
 
-if [ ! \( $platform == "SL5" -o $platform == "SL6" \) ]; then
-	echo "PLATFORM value '$platform' not valid"
-	exit 1
-fi
+get_environment_variables() {
+    emi_release_remote_rpm=$EMI_RELEASE_RPM
+    epel_release_remote_rpm=$EPEL_RELEASE_RPM
+    additional_repo=$ADDITIONAL_REPO
+    egi_trustanchors_repo=$EGI_TRUSTANCHORS_REPO
+    igi_test_ca_repo=$IGI_TEST_CA_REPO
+    robot_framework_version=$ROBOT_FRAMEWORK_VERSION
+}
 
-echo "PLATFORM=$platform"
-
-extra_repo=$ADDITIONAL_REPO
-
-# init
+print_configuration() {
+    echo "ADDITIONAL_REPO = $additional_repo"
+    echo "EMI_RELEASE_RPM = $emi_release_remote_rpm"
+    echo "EPEL_RELEASE_RPM = $epel_release_remote_rpm"
+    echo "IGI_TEST_CA_REPO = $igi_test_ca_repo"
+    echo "EGI_TRUSTANCHORS_REPO = $egi_trustanchors_repo"
+    echo "ROBOT_FRAMEWORK_VERSION = $robot_framework_version"
+}
 
 # host's private key and public certificate
 hostcert_path="/etc/grid-security/hostcert.pem"
 hostkey_path="/etc/grid-security/hostkey.pem"
 
-# egi-trustenchors repo link and destination file path
-egi_trustanchors_repo="http://repository.egi.eu/sw/production/cas/1/current/repo-files/EGI-trustanchors.repo"
-egi_trustanchors_file="/etc/yum.repos.d/EGI-trustanchors.repo"
+add_repo() {
+    local remote_url=$1
+    local local_repo_dir="/etc/yum.repos.d"
+    local remote_repo_filename=$(basename "$remote_url")
+    local local_repo_path="$local_repo_dir/$remote_repo_filename"
+    execute "wget -q $remote_url -O $local_repo_path"
+}
 
-# epel-release paths
-if [ $platform == "SL5" ]; then
-	epel_release="epel-release-5-4"
-	epel_release_rpm="http://archives.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm"
-else
-	epel_release="epel-release-6-8"
-	epel_release_rpm="http://www.nic.funet.fi/pub/mirrors/fedora.redhat.com/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
-fi
-
-# emi-release paths
-emi_release="emi-release-3.0.0-2"
-if [ $platform == "SL5" ]; then
-	emi_release_rpm="$emi_release.el5.noarch.rpm"
-	emi_release_remote_rpm="http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl5/x86_64/base/$emi_release.el5.noarch.rpm"
-else
-	emi_release_rpm="$emi_release.el6.noarch.rpm"
-	emi_release_remote_rpm="http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl6/x86_64/base/$emi_release.el6.noarch.rpm"
-fi
-
-#igi-test-ca remote rpm
-remote_igi_test_ca_rpm="http://radiohead.cnaf.infn.it:9999/job/test-ca/os=SL5_x86_64/lastSuccessfulBuild/artifact/igi-test-ca/rpmbuild/RPMS/noarch/igi-test-ca-1.0.2-2.noarch.rpm"
-
-# robot framework remote tar.gz
-robot_framework_file="robotframework-2.7.7"
-remote_robot_framework_targz="https://robotframework.googlecode.com/files/$robot_framework_file.tar.gz"
-
-# dcache srm client remote rpm
-dcahe_srmclient_remote_rpm="http://www.dcache.org/downloads/1.9/srm/dcache-srmclient-1.9.5-23.noarch.rpm"
+localinstall_rpm() {
+    local remote_url=$1
+    local local_name=$(basename $remote_url)
+    execute "wget $remote_url -O /tmp/$local_name"
+    execute "yum localinstall --nogpgcheck -y /tmp/$local_name"
+    execute "rm -f /tmp/$local_name"
+    echo "$local_name installed!"
+}
 
 update_repositories() {
 	# update egi repo
-	execute "wget $egi_trustanchors_repo -O $egi_trustanchors_file"
+    add_repo $egi_trustanchors_repo
+    # igi-test-ca repo
+    add_repo $igi_test_ca_repo
 	# additional repo
-	if [ ! -z "$extra_repo" ]; then
-		echo "ADDITIONAL_REPO=$extra_repo"
-		local extra_repo_filename=$(basename "$extra_repo")
-		local extra_repo_extension="${extra_repo_filename##*.}"
-		extra_repo_filename="${extra_repo_filename%.*}"
-		# Install additional test repo
-		execute "wget -q $extra_repo -O /etc/yum.repos.d/$extra_repo_filename.$extra_repo_extension"
+	if [ ! -z "$additional_repo" ]; then
+		echo "ADDITIONAL_REPO=$additional_repo"
+        add_repo $additional_repo
 	fi
 	# refresh yum
 	execute "yum clean all"
 }
 
-install_epel() {
-	# check if installed
-	if rpm -qa | grep $epel_release > /dev/null 2>&1
-	then
-		# nothing to do
-		echo "$epel_release already installed"
-	else
-		# download & install
-		execute "wget $epel_release_rpm"
-		execute "yum localinstall --nogpgcheck $epel_release.noarch.rpm -y"
-		echo "$epel_release installed"
-	fi
+install_robot_framework() {
+
+    local remote_url="https://robotframework.googlecode.com/files/robotframework-$1.tar.gz"
+    execute "wget $remote_url -O $HOME/robotframework-$1.tar.gz"
+    execute "tar -xzf $HOME/robotframework-$1.tar.gz"
+    execute "cd $HOME/robotframework-$1"
+    execute "python setup.py install"
+
 }
 
-install_emi_release() {
-	# check if installed
-	if rpm -qa | grep $emi_release > /dev/null 2>&1
-	then
-		# nothing to do
-		echo "$emi_release already installed"
-	else
-		# download & install
-		execute "wget $emi_release_remote_rpm"
-		execute "yum localinstall --nogpgcheck $emi_release_rpm -y"
-		echo "$emi_release installed"
-	fi
+install_prerequisites() {
+    # wget
+    execute "yum install -y wget"
 }
 
-install_igi_test_ca() {
-	if rpm -qa | grep "igi-test-ca-1.0.2-2" > /dev/null 2>&1
-	then
-		echo "igi-test-ca-1.0.2-2 already installed"
-	else
-		execute "wget $remote_igi_test_ca_rpm -O igi-test-ca.rpm"
-		execute "rpm -ivh igi-test-ca.rpm"
-	fi
+remove_dcache_srmclient_if_necessary() {
+    local current=$(rpm -qa | grep dcache-srmclient)
+    if [ $current == "dcache-srmclient-1.9.5-23" ]
+        then
+            echo "Your dcache-srmclient version is supported! Nothing to do."
+        else
+            echo "Your dcache-srmclient version is NOT supported! I'm removing it..."
+            execute "yum remove -y dcache-srmclient"
+    fi
 }
 
 install_all() {
-	# check if epel-release is installed, in case install
-	install_epel
-	# check if emi-release is installed, in case install
-	install_emi_release
-	# check if igi-test-ca is installed, in case install
-	install_igi_test_ca
+
+	# epel-release
+	localinstall_rpm $epel_release_remote_rpm
+	# emi-release
+	localinstall_rpm $emi_release_remote_rpm
+	# igi-test-ca
+    execute "yum install -y igi-test-ca"
 	# java
 	execute "yum install -y java-1.6.0-openjdk"
 	# git
@@ -157,14 +132,12 @@ install_all() {
 	# voms-clients
 	execute "yum install -y voms-clients"
 	# dcache-srmclient
-	execute "wget $dcahe_srmclient_remote_rpm -O $HOME/dcache-srmclient.rpm"
-	execute "yum localinstall -y --nogpgcheck $HOME/dcache-srmclient.rpm"
+    remove_dcache_srmclient_if_necessary
+    localinstall_rpm $dcache_srmclient_remote_rpm
+    # python
+    execute "yum install -y python"
 	# robot-framework
-	execute "yum install -y python"
-	execute "wget $remote_robot_framework_targz -O $HOME/$robot_framework_file.tar.gz"
-	execute "tar -xzf $HOME/$robot_framework_file.tar.gz"
-	execute "cd $HOME/$robot_framework_file"
-	execute "python setup.py install"
+    install_robot_framework $robot_framework_version
 }
 
 configure_voms_clients(){
@@ -206,19 +179,35 @@ replace_file_key_value() {
 	execute "sed -c -i \"s/\($TARGET_KEY *= *\).*/\1$REPLACEMENT_VALUE/\" $CONFIG_FILE"
 }
 
+add_profile_script() {
+    local remoteurl="https://raw.github.com/italiangrid/storm-deployment-test/master/testsuite-deployment/grid.sh"
+    execute "wget $remoteurl -O /etc/profile.d/grid.sh"
+    execute "source /etc/profile.d/grid.sh"
+}
+
 # hostname
 hostname=$(hostname -f)
 
 echo "StoRM-testsuite deployment started on $hostname!"
 
-# add repositories
+# init
+get_environment_variables
+print_configuration
+
+# prerequisites
+install_prerequisites
+
+# configure repositories
 update_repositories
 
-# install all
+# install
 install_all
 
 # configure voms clients
 configure_voms_clients
+
+# configure environment
+add_profile_script
 
 echo "StoRM-testsuite deployment finished!"
 exit 0

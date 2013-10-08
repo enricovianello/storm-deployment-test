@@ -2,19 +2,27 @@
 
 ### Installation
 
-To install all the needed packages, as root:
+To install all the packages needed to run the StoRM-testsuite follow these instructions:
+
+1. Download the installation script:
 
 ```bash
 wget https://raw.github.com/italiangrid/storm-deployment-test/master/testsuite-deployment/testsuite-deployment-script.sh
 ```
 
-Before running the script, set your platform choosing between SL5 or SL6 values:
+2. Set your environment variables correctly, by choosing between SL5 or SL6 setup scripts:
 
 ```bash
-export PLATFORM=SL6
+wget https://raw.github.com/italiangrid/storm-deployment-test/master/testsuite-deployment/setup-SL5.sh
+source setup-SL5.sh
+```
+or
+```bash
+wget https://raw.github.com/italiangrid/storm-deployment-test/master/testsuite-deployment/setup-SL6.sh
+source setup-SL6.sh
 ```
 
-Run the script:
+3. Run the script:
 
 ```bash
 sh testsuite-deployment-script.sh
@@ -22,28 +30,21 @@ sh testsuite-deployment-script.sh
 
 ### Use
 
-Login with your user.
+Create your user and login with it.
 Create or make sure that _globus_ directory exists:
 
 ```bash
 mkdir $HOME/.globus
 ```
 
-If globus directory exists and contains your personal cert and key, do a backup of them because storm-testsuite will overwrite your credentials:
+If globus directory exists and contains your personal cert and key, do a backup of them because StoRM-testsuite will overwrite your credentials:
 
 ```bash
 cp $HOME/.globus/usercert.pem $HOME/.globus/usercert.pem.backup
 cp $HOME/.globus/userkey.pem $HOME/.globus/userkey.pem.backup
 ```
 
-Set the needed environment variables:
-
-```bash
-wget https://raw.github.com/italiangrid/storm-deployment-test/master/testsuite-deployment/configure-environment-vars.sh
-source configure-environment-vars.sh
-```
-
-Download the run the storm-testsuite by specifying the hostname of your BackEnd:
+Download the run the storm-testsuite by specifying the hostname of your Backend hostname:
 
 ```bash
 git clone https://github.com/italiangrid/storm-testsuite.git
