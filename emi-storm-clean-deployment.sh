@@ -8,22 +8,22 @@
 #   YAIM_CONFIGURATION_FILE     : the URI of the 'storm.def' file with yaim configuration values
 #   REQUIRED_STORM_UID          : the required user-id for storm user
 #   REQUIRED_STORM_GID          : the required user-gid for storm user
-#   IGI_TEST_CA_REMOTE_RPM      : the URI of the IGI-test-CA rpm
-#   EGI_TRUSTANCHORS_REPO       : the URI of the EGI-trustanchors repo
 #   JAVA_LOCATION               : specify a different java location
 #   FS_TYPE                     : values: DISK or GPFS (default: DISK)
-#   CREATE_GRIDHTTPS_USER	: values: true|false (default: true)
+#   ENABLE_GRIDHTTPS_SERVER     : values: true|false (default: true)
 #
 trap "exit 1" TERM
 export TOP_PID=$$
 
-remote_siteinfo_dir="https://raw.github.com/italiangrid/storm-deployment-test/master/siteinfo"
-default_egi_trustanchors_repo="http://repository.egi.eu/sw/production/cas/1/current/repo-files/EGI-trustanchors.repo"
-default_gpfs_repo="http://radiohead.cnaf.infn.it:9999/job/repo_gpfs/3/artifact/gpfs.repo"
-default_igi_test_ca_remote_rpm="http://radiohead.cnaf.infn.it:9999/job/test-ca/os=SL5_x86_64/lastSuccessfulBuild/artifact/igi-test-ca/rpmbuild/RPMS/noarch/igi-test-ca-1.0.2-2.noarch.rpm"
-default_yaim_configuration_file="$remote_siteinfo_dir/storm.def"
-default_fs_type="DISK"
-default_create_gridhttps_user="true"
+remote_siteinfo_dir="https://raw.github.com/italiangrid/storm-deployment-test/master/siteinfo/"
+
+DEFAULT_ENABLE_GRIDHTTPS_SERVER="true"
+DEFAULT_YAIM_CONFIGURATION_FILE="$remote_siteinfo_dir/storm.def"
+DEFAULT_FS_TYPE="DISK"
+
+egi_trustanchors_repo="http://repository.egi.eu/sw/production/cas/1/current/repo-files/EGI-trustanchors.repo"
+gpfs_repo="http://radiohead.cnaf.infn.it:9999/job/repo_gpfs/3/artifact/gpfs.repo"
+igi_test_ca_repo="http://radiohead.cnaf.infn.it:9999/view/REPOS/job/repo_test_ca/lastSuccessfulBuild/artifact/test-ca.repo"
 
 execute_no_check(){
 	echo "[root@`hostname` ~]# $1"
@@ -49,61 +49,52 @@ get_environment_variables() {
     additional_repo=$ADDITIONAL_REPO
     emi_release_remote_rpm=$EMI_RELEASE_REMOTE_RPM
     epel_release_remote_rpm=$EPEL_RELEASE_REMOTE_RPM
-    egi_trustanchors_repo=$EGI_TRUSTANCHORS_REPO
-    igi_test_ca_remote_rpm=$IGI_TEST_CA_REMOTE_RPM
     java_location=$JAVA_LOCATION
     yaim_configuration_file=$YAIM_CONFIGURATION_FILE
     required_storm_uid=$REQUIRED_STORM_UID
     required_storm_gid=$REQUIRED_STORM_GID
     fs_type=$FS_TYPE
-    create_gridhttps_user=$CREATE_GRIDHTTPS_USER
+    enable_gridhttps=$ENABLE_GRIDHTTPS_SERVER
 }
 
 check_environment_variables() {
-    # additional_repo
-    echo "ADDITIONAL_REPO = $additional_repo"
     # emi-release
     if [ -z "$emi_release_remote_rpm" ]; then
         echo "Please set the EMI_RELEASE_REMOTE_RPM environment variable!"
         exit 1
     fi
-    echo "EMI_RELEASE_REMOTE_RPM = $emi_release_remote_rpm"
     # epel-release
     if [ -z "$epel_release_remote_rpm" ]; then
         echo "Please set the EPEL_RELEASE_REMOTE_RPM environment variable!"
         exit 1
     fi
-    echo "EPEL_RELEASE_REMOTE_RPM = $epel_release_remote_rpm"
-    # egi-trustanchors repo
-    if [ -z "$egi_trustanchors_repo" ]; then
-        egi_trustanchors_repo=$default_egi_trustanchors_repo
-    fi
-    echo "EGI_TRUSTANCHORS_REPO = $egi_trustanchors_repo"
-    # igi-test-ca
-    if [ -z "$igi_test_ca_remote_rpm" ]; then
-        igi_test_ca_remote_rpm=$default_igi_test_ca_remote_rpm
-    fi
-    echo "IGI_TEST_CA_REMOTE_RPM = $igi_test_ca_remote_rpm"
-    # java location
-    echo "JAVA_LOCATION = $java_location"
     # yaim configuration file
     if [ -z "$yaim_configuration_file" ]; then
-        yaim_configuration_file=$default_yaim_configuration_file
+        yaim_configuration_file=$DEFAULT_YAIM_CONFIGURATION_FILE
     fi
-    echo "YAIM_CONFIGURATION_FILE = $yaim_configuration_file"
-    # storm uid and gid
-    echo "REQUIRED_STORM_UID = $required_storm_uid"
-    echo "REQUIRED_STORM_GID = $required_storm_gid"
     # fs type
     if [ -z "$fs_type" ]; then
-        fs_type=$default_fs_type
+        fs_type=$DEFAULT_FS_TYPE
     fi
-    echo "FS_TYPE = $fs_type"
     # create gridhttps user
-    if [ -z "$create_gridhttps_user" ]; then
-        create_gridhttps_user=$default_create_gridhttps_user
+    if [ -z "$enable_gridhttps_server" ]; then
+        enable_gridhttps_server=$DEFAULT_ENABLE_GRIDHTTPS_SERVER
     fi
-    echo "CREATE_GRIDHTTPS_USER = $create_gridhttps_user"
+}
+
+print_configuration() {
+    echo "ADDITIONAL_REPO = $additional_repo"
+    echo "JAVA_LOCATION = $java_location"
+    echo "REQUIRED_STORM_UID = $required_storm_uid"
+    echo "REQUIRED_STORM_GID = $required_storm_gid"
+    echo "EMI_RELEASE_REMOTE_RPM = $emi_release_remote_rpm"
+    echo "EPEL_RELEASE_REMOTE_RPM = $epel_release_remote_rpm"
+    echo "YAIM_CONFIGURATION_FILE = $yaim_configuration_file"
+    echo "FS_TYPE = $fs_type"
+    echo "ENABLE_GRIDHTTPS_USER = $enable_gridhttps_server"
+    echo "IGI_TEST_CA_REPO = $igi_test_ca_repo"
+    echo "EGI_TRUSTANCHORS_REPO = $egi_trustanchors_repo"
+    echo "GPFS_REPO = $gpfs_repo"
 }
 
 set_users() {
@@ -130,8 +121,7 @@ set_users() {
             fi
         fi
     fi
-    if [ $create_gridhttps_user == "true" ]; then
-    	# create gridhttps user if not exists
+    if [ $enable_gridhttps == "true" ]; then
     	if id -u gridhttps >/dev/null 2>&1
     	then
         	echo "gridhttps user already exists"
@@ -188,12 +178,13 @@ update_repositories() {
     localinstall_rpm $epel_release_remote_rpm
     localinstall_rpm $emi_release_remote_rpm
     add_repo $egi_trustanchors_repo
+    add_repo $igi_test_ca_repo
     if [ ! -z "$additional_repo" ]; then
         add_repo $additional_repo
     fi
     if [ ! -z "$fs_type" ]; then
         if [ $fs_type -eq "GPFS" ]; then
-        	add_repo $default_gpfs_repo
+        	add_repo $gpfs_repo
     	fi
     fi
     # refresh yum
@@ -222,10 +213,10 @@ localinstall_rpm() {
 }
 
 install_all() {
-    # igi-test-ca
-    localinstall_rpm $igi_test_ca_remote_rpm
     # ca-policy-egi-core
     execute "yum install -y ca-policy-egi-core"
+    # igi-test-ca
+    execute "yum install -y igi-test-ca"
     # gpfs libraries
     if [ ! -z "$fs_type" ]; then
         if [ $fs_type -eq "GPFS" ]; then
@@ -281,6 +272,7 @@ echo "StoRM Deployment started on $hostname!"
 # init from environment variables
 get_environment_variables
 check_environment_variables
+print_configuration
 
 # add storm and gridhttps users
 set_users
