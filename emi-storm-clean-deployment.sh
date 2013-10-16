@@ -128,6 +128,8 @@ set_users() {
     	else
         	execute "useradd gridhttps -M -G storm"
     	fi
+    else
+    	echo "gridhttps user creation disabled"
     fi
 }
 
