@@ -240,6 +240,7 @@ configure() {
     if [ $enable_gridhttps_server == "false" ]; then
     	execute "sed -i '/STORM_GRIDHTTPS_SERVER_USER_UID/ d' $storm_def_file"
     	execute "sed -i '/STORM_GRIDHTTPS_SERVER_GROUP_UID/ d' $storm_def_file"
+    	replace_file_key_value  $storm_def_file "STORM_GRIDHTTPS_ENABLED" false
     fi
     # download vo files
     local storm_deployment_repo="https://raw.github.com/italiangrid/storm-deployment-test"
