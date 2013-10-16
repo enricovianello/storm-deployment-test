@@ -54,7 +54,7 @@ get_environment_variables() {
     required_storm_uid=$REQUIRED_STORM_UID
     required_storm_gid=$REQUIRED_STORM_GID
     fs_type=$FS_TYPE
-    enable_gridhttps=$ENABLE_GRIDHTTPS_SERVER
+    enable_gridhttps_server=$ENABLE_GRIDHTTPS_SERVER
 }
 
 check_environment_variables() {
@@ -121,7 +121,7 @@ set_users() {
             fi
         fi
     fi
-    if [ $enable_gridhttps == "true" ]; then
+    if [ $enable_gridhttps_server == "true" ]; then
     	if id -u gridhttps >/dev/null 2>&1
     	then
         	echo "gridhttps user already exists"
