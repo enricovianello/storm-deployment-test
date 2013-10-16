@@ -226,13 +226,21 @@ install_all() {
     	fi
     fi
     # StoRM metapackages
-    execute "yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp emi-storm-gridhttps-mp"
+    execute "yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp"
+    if [ $enable_gridhttps_server == "true" ]; then
+    	execute "yum install -y emi-storm-gridhttps-mp"
+    fi
 }
 
 configure() {
     local siteinfo_dir="/etc/storm/siteinfo"
+    local storm_def_file="$siteinfo_dir/storm.def"
     # download main configuration file
-    execute "wget $yaim_configuration_file -O $siteinfo_dir/storm.def"
+    execute "wget $yaim_configuration_file -O $storm_def_file"
+    if [ $enable_gridhttps_server == "false" ]; then
+    	execute "sed -i '/STORM_GRIDHTTPS_SERVER_USER_UID/ d' $storm_def_file"
+    	execute "sed -i '/STORM_GRIDHTTPS_SERVER_GROUP_UID/ d' $storm_def_file"
+    fi
     # download vo files
     local storm_deployment_repo="https://raw.github.com/italiangrid/storm-deployment-test"
     local branch="master"
@@ -242,7 +250,6 @@ configure() {
     execute "wget $remote_siteinfo_dir/storm-groups.conf -O $siteinfo_dir/storm-groups.conf"
     execute "wget $remote_siteinfo_dir/storm-wn-list.conf -O $siteinfo_dir/storm-wn-list.conf"    
     if [ ! -z $java_location ]; then
-        local storm_def_file="$siteinfo_dir/storm.def"
         # delete line
         execute "sed -i '/JAVA_LOCATION/ d' $storm_def_file"
         # add line
@@ -259,7 +266,11 @@ replace_file_key_value() {
 
 do_yaim() {
     local siteinfo_dir="/etc/storm/siteinfo"
-    local profiles="-n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_gridhttps"
+    if [ $enable_gridhttps_server == "true" ]; then
+    	local profiles="-n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_gridhttps"
+    else
+    	local profiles="-n se_storm_backend -n se_storm_frontend -n se_storm_gridftp"
+    fi
     execute "/opt/glite/yaim/bin/yaim -c -s $siteinfo_dir/storm.def $profiles"
 }
 
