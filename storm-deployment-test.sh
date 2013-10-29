@@ -80,6 +80,8 @@ fi
 
 [[ $supported_modes =~ $MODE ]] || ( echo "Invalid mode value: $MODE." && usage )
 
+export PLATFORM=$PLATFORM
+
 # The platform environment script
 env_script=""
 
