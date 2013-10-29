@@ -108,10 +108,10 @@ case "$MODE" in
                 deployment_script=( "emi-storm-clean-deployment.sh" )
                 ;;
         upgrade)
-                deployment_script=( "emi-voms-upgrade-deployment.sh" )
+                deployment_script=( "emi-storm-upgrade-deployment.sh" )
                 ;;
         update)
-                deployment_script=( "emi-voms-clean-deployment.sh" "emi-voms-upgrade-deployment.sh" )
+                deployment_script=( "emi-storm-clean-deployment.sh" "emi-storm-upgrade-deployment.sh" )
                 ;;
 esac
 
