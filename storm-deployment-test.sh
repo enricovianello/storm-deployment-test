@@ -142,7 +142,7 @@ source $env_script
 
 if [ -n "$REPO" ]; then
         echo "Setting custom repo to: $REPO"
-        export DEFAULT_STORM_REPO=$REPO
+        export ADDITIONAL_REPO=$REPO
 fi
 
 
