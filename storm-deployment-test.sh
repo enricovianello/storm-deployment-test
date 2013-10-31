@@ -17,7 +17,7 @@ script_repo="https://raw.github.com/italiangrid/storm-deployment-test/master"
 
 boolean_values="yes,no"
 
-ARGS=$(getopt -o p:m:r: -l "platform:mode:repo:" -n "storm-deployment-test.sh" -- "$@")
+ARGS=$(getopt -o p:m:r:d:g: -l "platform:mode:repo:updaterepo:upgraderepo:" -n "storm-deployment-test.sh" -- "$@")
 
 if [ $? -ne 0 ]; then
   echo "No arguments specified"
@@ -46,6 +46,16 @@ do
                 REPO="$1"
                 shift
                 ;;
+                -d | --updaterepo)
+                shift
+                UPDATEREPO="$1"
+                shift
+                ;;
+                -g | --upgraderepo)
+                shift
+                UPGRADEREPO="$1"
+                shift
+                ;;
                 --)
                 shift
                 break
@@ -61,6 +71,8 @@ usage() {
         echo "PLATFORM: $supported_platforms"
         echo "MODE: $supported_modes"
         echo "REPO: A repo url to be used instead of the default repo"
+        echo "UPDATEREPO: A repo url to be used instead for installing before an update"
+        echo "UPGRADEREPO: A repo url to be used instead for installing before an upgrade"
         kill -TERM $TOP_PID
 }
 
@@ -154,15 +166,21 @@ echo "Starting deployment test"
 echo
 
 if [ "$MODE" == "update" ]; then
-    SAVED_STORM_REPO=$DEFAULT_STORM_REPO
-    unset DEFAULT_STORM_REPO
+    export ADDITIONAL_REPO=$UPDATEREPO
     echo "Executing ${deployment_script[0]}"
     ./${deployment_script[0]}
 
-    export DEFAULT_STORM_REPO=$SAVED_STORM_REPO
+    export ADDITIONAL_REPO=$REPO
     echo "Executing ${deployment_script[1]}"
     ./${deployment_script[1]}
+elif [ "$MODE" == "upgrade" ]; then
+  export ADDITIONAL_REPO=$UPGRADEREPO
+  echo "Executing ${deployment_script[0]}"
+  ./${deployment_script[0]}
 
+  export ADDITIONAL_REPO=$REPO
+  echo "Executing ${deployment_script[1]}"
+  ./${deployment_script[1]}
 else
     echo "Executing ${deployment_script[0]}"
     ./${deployment_script[0]}
