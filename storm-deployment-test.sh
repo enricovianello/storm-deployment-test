@@ -115,10 +115,10 @@ case "$PLATFORM" in
                                 env_script=( "setup-scripts/SL6/setup-emi3-sl6.sh" )
                                 ;;
                         update)
-                                env_script=( "setup-scripts/SL6/setup-emi3-sl5.sh" )
+                                env_script=( "setup-scripts/SL6/setup-emi3-sl6.sh" )
                                 ;;
                         upgrade)
-                                env_script=( "setup-scripts/SL6/setup-emi2-sl5.sh" "setup-scripts/SL6/setup-emi3-sl5.sh")
+                                env_script=( "setup-scripts/SL6/setup-emi2-sl6.sh" "setup-scripts/SL6/setup-emi3-sl6.sh")
                                 ;;
                 esac
                 ;;
