@@ -97,10 +97,30 @@ pushd $workdir
 
 case "$PLATFORM" in
         SL5) 
-                env_script="setup-scripts/SL5/setup-emi3-sl5.sh"
+                case "$MODE" in
+                        clean)
+                                env_script=( "setup-scripts/SL5/setup-emi3-sl5.sh" )
+                                ;;
+                        update)
+                                env_script=( "setup-scripts/SL5/setup-emi3-sl5.sh" )
+                                ;;
+                        upgrade)
+                                env_script=( "setup-scripts/SL5/setup-emi2-sl5.sh" "setup-scripts/SL5/setup-emi3-sl5.sh")
+                                ;;
+                esac
                 ;;
         SL6)
-                env_script="setup-scripts/SL6/setup-emi3-sl6.sh"
+                case "$MODE" in
+                        clean)
+                                env_script=( "setup-scripts/SL6/setup-emi3-sl6.sh" )
+                                ;;
+                        update)
+                                env_script=( "setup-scripts/SL6/setup-emi3-sl5.sh" )
+                                ;;
+                        upgrade)
+                                env_script=( "setup-scripts/SL6/setup-emi2-sl5.sh" "setup-scripts/SL6/setup-emi3-sl5.sh")
+                                ;;
+                esac
                 ;;
 esac
 
@@ -110,7 +130,7 @@ case "$MODE" in
                 deployment_script=( "emi-storm-clean-deployment.sh" )
                 ;;
         upgrade)
-                deployment_script=( "emi-storm-upgrade-deployment.sh" )
+                deployment_script=( "emi-storm-clean-deployment.sh" "emi-storm-upgrade-deployment.sh" )
                 ;;
         update)
                 deployment_script=( "emi-storm-clean-deployment.sh" "emi-storm-upgrade-deployment.sh" )
@@ -122,23 +142,24 @@ echo "### StoRM Deployment Test ###"
 
 echo "Host: `hostname -f`"
 echo "Date: `date`"
-echo "Environment script: $script_repo/$env_script"        
+echo "Environment scripts: ${env_script[*]}"        
 echo "Deployment scripts: ${deployment_script[*]}"
 
 echo "Fetching environment script from GITHUB..."
 echo
 mkdir -p setup-scripts/$PLATFORM
-wget --no-check-certificate $script_repo/$env_script -O $env_script
+for s in "${env_script[@]}"; do
+    wget --no-check-certificate $script_repo/$s -O $s
+    chmod +x $s
+done
 
 echo "Fetching deployment scripts from GITHUB..."
 echo
-
 for s in "${deployment_script[@]}"; do
     wget --no-check-certificate $script_repo/$s -O $s
     chmod +x $s
 done
 
-source $env_script
 
 if [ -n "$REPO" ]; then
         echo "Setting custom repo to: $REPO"
@@ -154,6 +175,8 @@ echo "Starting deployment test"
 echo
 
 if [ "$MODE" == "update" ]; then
+    echo "Setting environment: ${env_script[0]}"
+    source ${env_script[0]}
     SAVED_STORM_REPO=$DEFAULT_STORM_REPO
     unset DEFAULT_STORM_REPO
     echo "Executing ${deployment_script[0]}"
@@ -162,8 +185,22 @@ if [ "$MODE" == "update" ]; then
     export DEFAULT_STORM_REPO=$SAVED_STORM_REPO
     echo "Executing ${deployment_script[1]}"
     ./${deployment_script[1]}
+elif [ "$MODE" == "upgrade" ]; then
+    echo "Setting environment: ${env_script[0]}"
+    source ${env_script[0]}
+    SAVED_STORM_REPO=$DEFAULT_STORM_REPO
+    unset DEFAULT_STORM_REPO
+    echo "Executing ${deployment_script[0]}"
+    ./${deployment_script[0]}
 
+    echo "Setting environment: ${env_script[1]}"
+    source ${env_script[1]}
+    export DEFAULT_STORM_REPO=$SAVED_STORM_REPO
+    echo "Executing ${deployment_script[1]}"
+    ./${deployment_script[1]}
 else
+    echo "Setting environment: ${env_script[0]}"
+    source ${env_script[0]}
     echo "Executing ${deployment_script[0]}"
     ./${deployment_script[0]}
 fi
