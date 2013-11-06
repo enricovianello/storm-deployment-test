@@ -19,7 +19,7 @@ adduser -r gridhttps
 usermod -a -G storm gridhttps
 
 # download siteinfo file
-mkdir -p /etc/storm/siteinfo
+mkdir -p /etc/storm/siteinfo/vo.d
 wget https://raw.github.com/italiangrid/storm-deployment-test/master/siteinfo/emi2-	storm.def -O /etc/storm/siteinfo/storm.def
 wget https://raw.github.com/italiangrid/storm-deployment-test/master/siteinfo/vo.d/testers.eu-emi.eu -O /etc/storm/siteinfo/vo.d/testers.eu-emi.eu
 wget https://raw.github.com/italiangrid/storm-deployment-test/master/siteinfo/storm-users.conf -O /etc/storm/siteinfo/storm-users.conf
