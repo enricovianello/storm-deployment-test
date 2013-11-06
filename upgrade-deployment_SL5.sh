@@ -30,7 +30,7 @@ wget https://raw.github.com/italiangrid/storm-deployment-test/master/siteinfo/st
 /opt/glite/yaim/bin/yaim -c -d 6 -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_gridhttps
 
 # install EMI-3 emi-release
-wget http://emisoft.web.cern.ch/emisoft/dist/EMI/2/sl5/x86_64/base/emi-release-3.0.0-2.el5.noarch.rpm
+wget http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl5/x86_64/base/emi-release-3.0.0-2.el5.noarch.rpm
 yum localinstall --nogpgcheck -y emi-release-3.0.0-2.el5.noarch.rpm
 
 # install the storm repo
