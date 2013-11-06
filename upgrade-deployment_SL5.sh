@@ -3,7 +3,7 @@
 # This script execute a clean deployment of StoRM
 
 trap "exit 1" TERM
-set -x
+set -ex
 
 # install emi-release
 wget http://emisoft.web.cern.ch/emisoft/dist/EMI/2/sl5/x86_64/base/emi-release-2.0.0-1.sl5.noarch.rpm
