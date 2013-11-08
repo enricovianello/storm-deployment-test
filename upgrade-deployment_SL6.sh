@@ -6,7 +6,7 @@ trap "exit 1" TERM
 set -ex
 
 # install emi-release
-wget http://emisoft.web.cern.ch/emisoft/dist/EMI/2/sl6/x86_64/base/emi-release-2.0.0-1.el6.noarch.rpm
+wget http://emisoft.web.cern.ch/emisoft/dist/EMI/2/sl6/x86_64/base/emi-release-2.0.0-1.sl6.noarch.rpm
 yum localinstall --nogpgcheck -y emi-release-2.0.0-1.el6.noarch.rpm
 
 # install
