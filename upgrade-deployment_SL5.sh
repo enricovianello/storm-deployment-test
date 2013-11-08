@@ -38,7 +38,7 @@ wget http://radiohead.cnaf.infn.it:9999/view/REPOS/job/repo_storm_develop_SL5/la
 
 # update
 yum clean all
-yum update
+yum update emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp emi-storm-gridhttps-mp
 
 # do yaim
 /opt/glite/yaim/bin/yaim -c -d 6 -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_gridhttps
