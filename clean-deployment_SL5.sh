@@ -14,7 +14,7 @@ wget $WGET_OPTIONS http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl5/x86_64/base
 yum localinstall --nogpgcheck -y emi-release-3.0.0-2.el5.noarch.rpm
 
 # install the storm repo
-wget $WGET_OPTIONS$STORM_REPO -O /etc/yum.repos.d/storm.repo
+wget $WGET_OPTIONS $STORM_REPO -O /etc/yum.repos.d/storm.repo
 
 # install
 yum clean all
