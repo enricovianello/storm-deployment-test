@@ -1,5 +1,0 @@
-export EMI_RELEASE_RPM="http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl6/x86_64/base/emi-release-3.0.0-2.el6.noarch.rpm"
-export EPEL_RELEASE_RPM="http://www.nic.funet.fi/pub/mirrors/fedora.redhat.com/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
-export EGI_TRUSTANCHORS_REPO="http://repository.egi.eu/sw/production/cas/1/current/repo-files/EGI-trustanchors.repo"
-export IGI_TEST_CA_REPO="http://radiohead.cnaf.infn.it:9999/view/REPOS/job/repo_test_ca/lastSuccessfulBuild/artifact/test-ca.repo"
-export ROBOT_FRAMEWORK_VERSION="2.8.1"
