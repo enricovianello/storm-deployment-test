@@ -30,6 +30,9 @@ wget $WGET_OPTIONS  https://raw.github.com/italiangrid/storm-deployment-test/mas
 wget $WGET_OPTIONS  https://raw.github.com/italiangrid/storm-deployment-test/master/siteinfo/storm-groups.conf -O /etc/storm/siteinfo/storm-groups.conf
 wget $WGET_OPTIONS  https://raw.github.com/italiangrid/storm-deployment-test/master/siteinfo/storm-wn-list.conf -O /etc/storm/siteinfo/storm-wn-list.conf
 
+# Sleep more in bdii init script to avoid issues on docker
+sed -i 's/sleep 2/sleep 5/' /etc/init.d/bdii
+
 # do yaim
 /opt/glite/yaim/bin/yaim -c -d 6 -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_gridhttps
 
@@ -39,6 +42,9 @@ wget $WGET_OPTIONS  $STORM_REPO -O /etc/yum.repos.d/storm.repo
 # update
 yum clean all
 yum update -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp emi-storm-gridhttps-mp
+
+# Sleep more in bdii init script to avoid issues on docker
+sed -i 's/sleep 2/sleep 5/' /etc/init.d/bdii
 
 # do yaim
 /opt/glite/yaim/bin/yaim -c -d 6 -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_gridhttps
