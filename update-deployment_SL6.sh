@@ -17,6 +17,9 @@ yum localinstall --nogpgcheck -y emi-release-3.0.0-2.el6.noarch.rpm
 yum clean all
 yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp emi-storm-gridhttps-mp
 
+# disable the immutable attribute to avoid system updates issue
+chattr -i /lib/udev/rules.d/75-persistent-net-generator.rules 
+
 # add some users
 adduser -r storm
 adduser -r gridhttps
