@@ -9,8 +9,13 @@ cd /storage/testers.eu-emi.eu/
 ln -s ../dteam dteam
 ln -s ../noauth noauth_sa
 
+cd /storage/test.vo/
+ln -s ../dteam dteam
+ln -s ../noauth noauth_sa
+
 cd /storage/noauth/
 ln -s ../testers.eu-emi.eu testers
+ln -s ../test.vo testvo
 
 # fix db grants for root@'fqdn' if needed
 HOSTNAME=`hostname -f`
