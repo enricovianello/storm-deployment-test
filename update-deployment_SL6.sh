@@ -15,16 +15,13 @@ yum localinstall --nogpgcheck -y emi-release-3.0.0-2.el6.noarch.rpm
 
 # install
 yum clean all
-yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp emi-storm-gridhttps-mp
+yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp storm-webdav
 
 # disable the immutable attribute to avoid system updates issue
 chattr -i /lib/udev/rules.d/75-net-description.rules
 
 # add some users
 adduser -r storm
-adduser -r gridhttps
-usermod -a -G storm gridhttps
-
 
 # install yaim configuration
 sh ./install-yaim-configuration.sh
@@ -33,7 +30,7 @@ sh ./install-yaim-configuration.sh
 sed -i 's/sleep 2/sleep 5/' /etc/init.d/bdii
 
 # do yaim
-/opt/glite/yaim/bin/yaim -c -d 6 -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_gridhttps
+/opt/glite/yaim/bin/yaim -c -d 6 -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_webdav
 
 # install the storm repo
 wget $WGET_OPTIONS  $STORM_REPO -O /etc/yum.repos.d/storm.repo
@@ -49,4 +46,4 @@ sed -i 's/sleep 2/sleep 5/' /etc/init.d/bdii
 sh ./post-config-setup.sh
 
 # do yaim
-/opt/glite/yaim/bin/yaim -c -d 6 -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_gridhttps
+/opt/glite/yaim/bin/yaim -c -d 6 -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_webdav
