@@ -13,15 +13,15 @@ STORM_REPO=${STORM_REPO:-http://radiohead.cnaf.infn.it:9999/view/REPOS/job/repo_
 wget $WGET_OPTIONS  http://emisoft.web.cern.ch/emisoft/dist/EMI/3/sl6/x86_64/base/emi-release-3.0.0-2.el6.noarch.rpm
 yum localinstall --nogpgcheck -y emi-release-3.0.0-2.el6.noarch.rpm
 
+# add some users
+adduser -r storm
+
 # install
 yum clean all
 yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp storm-webdav
 
 # disable the immutable attribute to avoid system updates issue
 chattr -i /lib/udev/rules.d/75-net-description.rules
-
-# add some users
-adduser -r storm
 
 # install yaim configuration
 sh ./install-yaim-configuration.sh
