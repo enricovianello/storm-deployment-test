@@ -6,7 +6,7 @@ pushd .
 
 # add SAs links
 cd /storage/test.vo/
-ln -s ../testers.eu-emi.eu testvo_to_testerseuemieu
+ln -s ../test.vo.2 testvo_to_testvo2
 
 # fix db grants for root@'fqdn' if needed
 HOSTNAME=`hostname -f`
