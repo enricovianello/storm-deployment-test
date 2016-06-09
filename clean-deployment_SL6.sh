@@ -14,8 +14,9 @@ yum localinstall --nogpgcheck -y emi-release-3.0.0-2.el6.noarch.rpm
 # install the storm repo
 wget $WGET_OPTIONS $STORM_REPO -O /etc/yum.repos.d/storm.repo
 
-# install
+# update vm
 yum clean all
+yum update -y
 
 # add some users
 adduser -r storm
