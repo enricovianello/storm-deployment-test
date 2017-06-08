@@ -57,13 +57,14 @@ wget $WGET_OPTIONS  $STORM_REPO -O /etc/yum.repos.d/storm.repo
 
 # update
 yum clean all
-sh ./pre-update.sh
 yum update -y
 
 if [ $? != 0 ]; then
     echo "Problem occurred while updating the system!"
     exit 1
 fi
+
+sh ./post-update.sh
 
 fix_yaim
 
