@@ -7,7 +7,12 @@ trap "exit 1" TERM
 set -ex
 
 # use the STORM_REPO env variable for the repo, or default to the develop repo
-STORM_REPO=${STORM_REPO:-http://radiohead.cnaf.infn.it:9999/view/REPOS/job/repo_storm_develop_SL6/lastSuccessfulBuild/artifact/storm_develop_sl6.repo}
+if [ -n "${STORM_REPO}" ]; then
+  STORM_REPO=${STORM_REPO}
+else
+  echo "ERROR: STORM_REPO not found. Please check your environment variables."
+  exit 1
+fi
 
 # install UMD repositories
 rpm --import http://repository.egi.eu/sw/production/umd/UMD-RPM-PGP-KEY
@@ -38,6 +43,7 @@ wget $WGET_OPTIONS  $STORM_REPO -O /etc/yum.repos.d/storm.repo
 
 # update
 yum clean all
+sh ./pre-update.sh
 yum update -y
 
 # Sleep more in bdii init script to avoid issues on docker
