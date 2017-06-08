@@ -16,8 +16,8 @@ WGET_OPTIONS="--no-check-certificate"
 trap "exit 1" TERM
 set -ex
 
-FROM_VERSION=${FROM_VERSION:-"1.11.11"}
-TO_VERSION=${TO_VERSION:-"1.11.12"}
+FROM_VERSION=${FROM_VERSION:-"production"}
+TO_VERSION=${TO_VERSION:-"production"}
 
 # use the STORM_REPO env variable for the repo or exit with error
 if [ -n "${STORM_REPO}" ]; then

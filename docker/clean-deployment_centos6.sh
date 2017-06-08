@@ -4,7 +4,7 @@ trap "exit 1" TERM
 
 WGET_OPTIONS="--no-check-certificate"
 
-VERSION=${VERSION:-"1.11.12"}
+VERSION=${VERSION:-"production"}
 
 # use the STORM_REPO env variable for the repo or exit with error
 if [ -n "${STORM_REPO}" ]; then
