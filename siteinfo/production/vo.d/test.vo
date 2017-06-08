@@ -1,0 +1,6 @@
+SW_DIR=$VO_SW_DIR/test.vo
+DEFAULT_SE=$SE_HOST
+STORAGE_DIR=$CLASSIC_STORAGE_DIR/test.vo
+VOMS_SERVERS="'vomss://vgrid02.cnaf.infn.it:8443/voms/test.vo?/test.vo'"
+VOMSES="'test.vo vgrid02.cnaf.infn.it 15000 /C=IT/O=INFN/OU=Host/L=CNAF/CN=vgrid02.cnaf.infn.it test.vo'"
+VOMS_CA_DN="'/C=IT/O=INFN/CN=INFN Certification Authority'"
