@@ -10,26 +10,17 @@ fix_yaim () {
   echo "}">> /opt/glite/yaim/functions/local/config_ntp
 }
 
-# This script execute a clean deployment of StoRM
+COMMON_PATH="../common"
 WGET_OPTIONS="--no-check-certificate"
 
 trap "exit 1" TERM
 set -ex
 
-FROM_VERSION=${FROM_VERSION:-"production"}
-TO_VERSION=${TO_VERSION:-"production"}
-
-# use the STORM_REPO env variable for the repo or exit with error
-if [ -n "${STORM_REPO}" ]; then
-  STORM_REPO=${STORM_REPO}
-else
-  echo "ERROR: STORM_REPO not found. Please check your environment variables."
-  exit 1
-fi
+# use the STORM_REPO env variable for the repo or use storm official centos6 repo
+STORM_REPO=${STORM_REPO:-http://italiangrid.github.io/storm/repo/storm_sl6.repo}
 
 # install UMD repositories
-rpm --import http://repository.egi.eu/sw/production/umd/UMD-RPM-PGP-KEY
-yum install -y http://repository.egi.eu/sw/production/umd/3/sl6/x86_64/updates/umd-release-3.14.3-1.el6.noarch.rpm
+sh ${COMMON_PATH}/install-umd-repos.sh
 
 # add some users
 adduser -r storm
@@ -41,7 +32,7 @@ yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridf
 fix_yaim
 
 # install yaim configuration
-sh ./install-yaim-configuration.sh ${FROM_VERSION}
+sh ${COMMON_PATH}/install-yaim-configuration.sh "clean"
 
 # Sleep more avoid issues on docker
 sed -i 's/sleep 20/sleep 30/' /etc/init.d/storm-backend-server
@@ -64,7 +55,7 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-sh ./post-update.sh
+sh ${COMMON_PATH}/post-update.sh
 
 fix_yaim
 
@@ -75,10 +66,10 @@ sed -i 's/sleep 20/sleep 30/' /etc/init.d/storm-backend-server
 sed -i 's/sleep 2/sleep 5/' /etc/init.d/bdii
 
 # re-install yaim configuration
-sh ./install-yaim-configuration.sh ${TO_VERSION}
+sh ${COMMON_PATH}/install-yaim-configuration.sh "update"
 
 # run post-installation config script
-sh ./post-config-setup.sh ${TO_VERSION}
+sh ${COMMON_PATH}/post-config-setup.sh "update"
 
 # do yaim
 /opt/glite/yaim/bin/yaim -c -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_webdav

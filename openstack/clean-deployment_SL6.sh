@@ -2,14 +2,14 @@
 set -ex
 trap "exit 1" TERM
 
+COMMON_PATH="../common"
 WGET_OPTIONS="--no-check-certificate"
 
-# use the STORM_REPO env variable for the repo, or default to the develop repo
-STORM_REPO=${STORM_REPO:-http://radiohead.cnaf.infn.it:9999/view/REPOS/job/repo_storm_develop_SL6/lastSuccessfulBuild/artifact/storm_develop_sl6.repo}
+# use the STORM_REPO env variable for the repo or use storm official centos6 repo
+STORM_REPO=${STORM_REPO:-http://italiangrid.github.io/storm/repo/storm_sl6.repo}
 
 # install UMD repositories
-rpm --import http://repository.egi.eu/sw/production/umd/UMD-RPM-PGP-KEY
-yum install -y http://repository.egi.eu/sw/production/umd/3/sl6/x86_64/updates/umd-release-3.14.3-1.el6.noarch.rpm
+sh ${COMMON_PATH}/install-umd-repos.sh
 
 # install the storm repo
 wget $WGET_OPTIONS $STORM_REPO -O /etc/yum.repos.d/storm.repo
@@ -25,11 +25,11 @@ adduser -r storm
 yum install -y emi-storm-backend-mp emi-storm-frontend-mp emi-storm-globus-gridftp-mp storm-webdav
 
 # install yaim configuration
-sh ./install-yaim-configuration.sh
+sh ${COMMON_PATH}/install-yaim-configuration.sh "clean"
 
 # configure with yaim
 /opt/glite/yaim/bin/yaim -c -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_webdav
 
 # run post-installation config script
-sh ./post-config-setup.sh
+sh ${COMMON_PATH}/post-config-setup.sh "clean"
 
