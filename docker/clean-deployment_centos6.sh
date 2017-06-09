@@ -31,7 +31,7 @@ echo "return 0">> /opt/glite/yaim/functions/local/config_ntp
 echo "}">> /opt/glite/yaim/functions/local/config_ntp
 
 # install yaim configuration
-sh ${COMMON_PATH}/install-yaim-configuration.sh "clean"
+sh ${COMMON_PATH}/install-yaim-configuration.sh "update"
 
 # Sleep more avoid issues on docker
 sed -i 's/sleep 20/sleep 30/' /etc/init.d/storm-backend-server
@@ -43,4 +43,4 @@ sed -i 's/sleep 2/sleep 5/' /etc/init.d/bdii
 /opt/glite/yaim/bin/yaim -c -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_webdav
 
 # run post-installation config script
-sh ${COMMON_PATH}/post-config-setup.sh "clean"
+sh ${COMMON_PATH}/post-config-setup.sh "update"
