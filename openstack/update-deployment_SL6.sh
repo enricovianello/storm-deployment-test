@@ -16,8 +16,7 @@ fi
 
 # install UMD repositories
 rpm --import http://repository.egi.eu/sw/production/umd/UMD-RPM-PGP-KEY
-wget $WGET_OPTIONS http://repository.egi.eu/sw/production/umd/3/sl6/x86_64/updates/umd-release-3.14.3-1.el6.noarch.rpm
-yum localinstall -y umd-release-3.14.3-1.el6.noarch.rpm
+yum install -y http://repository.egi.eu/sw/production/umd/3/sl6/x86_64/updates/umd-release-3.14.3-1.el6.noarch.rpm
 
 # add some users
 adduser -r storm
@@ -43,8 +42,9 @@ wget $WGET_OPTIONS  $STORM_REPO -O /etc/yum.repos.d/storm.repo
 
 # update
 yum clean all
-sh ./pre-update.sh
 yum update -y
+
+sh ./post-update.sh
 
 # Sleep more in bdii init script to avoid issues on docker
 sed -i 's/sleep 2/sleep 5/' /etc/init.d/bdii
