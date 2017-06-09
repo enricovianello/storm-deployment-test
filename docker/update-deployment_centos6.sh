@@ -10,14 +10,13 @@ fix_yaim () {
   echo "}">> /opt/glite/yaim/functions/local/config_ntp
 }
 
-COMMON_PATH="../common"
-WGET_OPTIONS="--no-check-certificate"
-
 trap "exit 1" TERM
 set -ex
 
-# use the STORM_REPO env variable for the repo or use storm official centos6 repo
-STORM_REPO=${STORM_REPO:-http://italiangrid.github.io/storm/repo/storm_sl6.repo}
+COMMON_PATH="../common"
+WGET_OPTIONS="--no-check-certificate"
+
+source ${COMMON_PATH}/input.env
 
 # install UMD repositories
 sh ${COMMON_PATH}/install-umd-repos.sh
