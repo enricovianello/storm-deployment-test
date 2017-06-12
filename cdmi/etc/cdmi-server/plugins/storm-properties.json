@@ -1,0 +1,16 @@
+{
+	"backend": {
+		"hostname": "docker-storm.cnaf.infn.it",
+		"port": 9998,
+		"token": "NS4kYAZuR65XJCq"
+	},
+	"vos": [
+        {
+            "name": "test.vo",
+            "read-scope": "testvo:read",
+            "recall-scope": "testvo:recall",
+            "iam-group": "test.vo-users",
+            "path": "/test.vo"
+        }
+    ]
+}
