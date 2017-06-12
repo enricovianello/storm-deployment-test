@@ -2,6 +2,9 @@
 set -ex
 trap "exit 1" TERM
 
+CLIENT_ID=$1
+CLIENT_SECRET=$2
+
 COMMON_PATH="../common"
 APPLICATION_CONFIG_PATH="/var/lib/cdmi-server/config"
 PLUGINS_CONFIG_PATH="/etc/cdmi-server/plugins"
