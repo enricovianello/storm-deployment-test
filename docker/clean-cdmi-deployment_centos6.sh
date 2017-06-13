@@ -20,8 +20,8 @@ yum install -y cdmi-storm
 # Configure
 rm -rf ${APPLICATION_CONFIG_PATH}/application.yml
 cp -rf ../cdmi/application.yml ${APPLICATION_CONFIG_PATH}/application.yml
-sed -i "s/CLIENT_ID/${CLIENT_ID}/g" ${APPLICATION_CONFIG_PATH}/application.yml > /dev/null 2>&1
-sed -i "s/CLIENT_SECRET/${CLIENT_SECRET}/g" ${APPLICATION_CONFIG_PATH}/application.yml > /dev/null 2>&1
+sed -i "s/CLIENT_ID/${CLIENT_ID}/g" ${APPLICATION_CONFIG_PATH}/application.yml
+sed -i "s/CLIENT_SECRET/${CLIENT_SECRET}/g" ${APPLICATION_CONFIG_PATH}/application.yml
 
 cat ${APPLICATION_CONFIG_PATH}/application.yml
 
