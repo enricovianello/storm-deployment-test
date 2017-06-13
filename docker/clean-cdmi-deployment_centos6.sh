@@ -51,5 +51,6 @@ if [ $attempts -gt $MAX_RETRIES ]; then
 fi
 
 su - cdmi
+export JAVA_OPTS="-Dloader.path=/usr/lib/cdmi-server/plugins/"
 cd /var/lib/cdmi-server
-./cdmi-server-1.2.jar -Dloader.path=/usr/lib/cdmi-server/plugins/
+./cdmi-server-1.2.jar
