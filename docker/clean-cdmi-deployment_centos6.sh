@@ -2,15 +2,15 @@
 set -ex
 trap "exit 1" TERM
 
-CLIENT_ID=$1
-CLIENT_SECRET=$2
-REDIS_HOSTNAME=$3
-
 COMMON_PATH="../common"
 APPLICATION_CONFIG_PATH="/var/lib/cdmi-server/config"
 PLUGINS_CONFIG_PATH="/etc/cdmi-server/plugins"
 
 source ${COMMON_PATH}/input.env
+
+if [ -z ${STORM_REPO+x} ]; then echo "STORM_REPO is unset"; exit 1; fi
+if [ -z ${CLIENT_ID+x} ]; then echo "CLIENT_ID is unset"; exit 1; fi
+if [ -z ${CLIENT_SECRET+x} ]; then echo "CLIENT_SECRET is unset"; exit 1; fi
 
 # install cdmi_storm
 wget $STORM_REPO -O /etc/yum.repos.d/cdmi-storm.repo
@@ -20,9 +20,8 @@ yum install -y cdmi-storm
 # Configure
 rm -rf ${APPLICATION_CONFIG_PATH}/application.yml
 cp -rf ../cdmi/application.yml ${APPLICATION_CONFIG_PATH}/application.yml
-sed -i "s/CLIENT_ID/${CLIENT_ID}/g" ${APPLICATION_CONFIG_PATH}/application.yml
-sed -i "s/CLIENT_SECRET/${CLIENT_SECRET}/g" ${APPLICATION_CONFIG_PATH}/application.yml
-sed -i "s/REDIS_HOSTNAME/${REDIS_HOSTNAME}/g" ${APPLICATION_CONFIG_PATH}/application.yml
+sed -i "s/CLIENT_ID/${CLIENT_ID}/g" ${APPLICATION_CONFIG_PATH}/application.yml > /dev/null 2>&1
+sed -i "s/CLIENT_SECRET/${CLIENT_SECRET}/g" ${APPLICATION_CONFIG_PATH}/application.yml > /dev/null 2>&1
 
 cat ${APPLICATION_CONFIG_PATH}/application.yml
 
