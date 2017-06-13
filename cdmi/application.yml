@@ -35,4 +35,4 @@ spring:
   profiles: redis
   redis:
     port: 6379
-    host: redis.cnaf.infn.it
+    host: REDIS_HOSTNAME

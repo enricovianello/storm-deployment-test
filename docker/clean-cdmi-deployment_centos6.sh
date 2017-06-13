@@ -4,11 +4,11 @@ trap "exit 1" TERM
 
 CLIENT_ID=$1
 CLIENT_SECRET=$2
+REDIS_HOSTNAME=$3
 
 COMMON_PATH="../common"
 APPLICATION_CONFIG_PATH="/var/lib/cdmi-server/config"
 PLUGINS_CONFIG_PATH="/etc/cdmi-server/plugins"
-REDIS_HOSTNAME=${REDIS_HOSTNAME:-redis.cnaf.infn.it}
 
 source ${COMMON_PATH}/input.env
 
@@ -17,21 +17,18 @@ wget $STORM_REPO -O /etc/yum.repos.d/cdmi-storm.repo
 yum clean all
 yum install -y cdmi-storm
 
-ls /usr/lib/cdmi-server/plugins
-
 # Configure
 rm -rf ${APPLICATION_CONFIG_PATH}/application.yml
 cp -rf ../cdmi/application.yml ${APPLICATION_CONFIG_PATH}/application.yml
 sed -i "s/CLIENT_ID/${CLIENT_ID}/g" ${APPLICATION_CONFIG_PATH}/application.yml
 sed -i "s/CLIENT_SECRET/${CLIENT_SECRET}/g" ${APPLICATION_CONFIG_PATH}/application.yml
+sed -i "s/REDIS_HOSTNAME/${REDIS_HOSTNAME}/g" ${APPLICATION_CONFIG_PATH}/application.yml
 
 cat ${APPLICATION_CONFIG_PATH}/application.yml
 
 mkdir -p ${PLUGINS_CONFIG_PATH}
 cp -rf ../cdmi/capabilities ${PLUGINS_CONFIG_PATH}
 cp -rf ../cdmi/storm-properties.json ${PLUGINS_CONFIG_PATH}/storm-properties.json
-
-ls ${PLUGINS_CONFIG_PATH}
 
 # Wait for redis server
 MAX_RETRIES=600
