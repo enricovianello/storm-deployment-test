@@ -8,7 +8,7 @@ CLIENT_SECRET=$2
 COMMON_PATH="../common"
 APPLICATION_CONFIG_PATH="/var/lib/cdmi-server/config"
 PLUGINS_CONFIG_PATH="/etc/cdmi-server/plugins"
-REDIS_HOSTNAME="redis.cnaf.infn.it"
+REDIS_HOSTNAME=${REDIS_HOSTNAME:-redis.cnaf.infn.it}
 
 source ${COMMON_PATH}/input.env
 
