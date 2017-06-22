@@ -4,12 +4,12 @@
 		"port": 9998,
 		"token": "NS4kYAZuR65XJCq"
 	},
-	"vos": [
+	"vfs": [
         {
-            "name": "test.vo",
-            "read-scope": "testvo:read",
-            "recall-scope": "testvo:recall",
-            "iam-group": "test.vo-users",
+            "voName": "test.vo",
+            "readScope": "testvo:read",
+            "recallScope": "testvo:recall",
+            "iamGroup": "test.vo-users",
             "path": "/test.vo"
         }
     ]
