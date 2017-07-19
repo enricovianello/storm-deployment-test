@@ -28,26 +28,26 @@ cp -rf ../cdmi/capabilities ${PLUGINS_CONFIG_PATH}
 cp -rf ../cdmi/storm-properties.json ${PLUGINS_CONFIG_PATH}/storm-properties.json
 
 # Wait for redis server
-# MAX_RETRIES=600
-# attempts=1
-# CMD="nc -w1 ${REDIS_HOSTNAME} 6379"
+MAX_RETRIES=600
+attempts=1
+CMD="nc -w1 ${REDIS_HOSTNAME} 6379"
 
-# echo "Waiting for Redis server ... "
-# $CMD
+echo "Waiting for Redis server ... "
+$CMD
 
-# while [ $? -eq 1 ] && [ $attempts -le  $MAX_RETRIES ];
-#do
-#   sleep 5
-#  let attempts=attempts+1
-#  $CMD
-#done
+while [ $? -eq 1 ] && [ $attempts -le  $MAX_RETRIES ];
+do
+  sleep 5
+  let attempts=attempts+1
+  $CMD
+done
 
-#if [ $attempts -gt $MAX_RETRIES ]; then
-#    echo "Timeout!"
-#    exit 1
-#fi
+if [ $attempts -gt $MAX_RETRIES ]; then
+  echo "Timeout!"
+  exit 1
+fi
 
-su - cdmi
-export JAVA_OPTS="-Dloader.path=/usr/lib/cdmi-server/plugins/"
-cd /var/lib/cdmi-server
-./cdmi-server-1.2.jar
+echo "export JAVA_OPTS=\"-Dloader.path=/usr/lib/cdmi-server/plugins/\"" >> /etc/profile.d/cdmi.sh
+chmod +x /etc/profile.d/cdmi.sh
+
+su - cdmi -c "cd /var/lib/cdmi-server; ./cdmi-server-1.2.jar"
