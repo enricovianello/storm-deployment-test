@@ -2,11 +2,11 @@
 set -ex
 trap "exit 1" TERM
 
+source ../properties
+
 COMMON_PATH="../common"
 APPLICATION_CONFIG_PATH="/var/lib/cdmi-server/config"
 PLUGINS_CONFIG_PATH="/etc/cdmi-server/plugins"
-
-source ${COMMON_PATH}/input.env
 
 if [ -z ${STORM_REPO+x} ]; then echo "STORM_REPO is unset"; exit 1; fi
 if [ -z ${CDMI_CLIENT_ID+x} ]; then echo "CDMI_CLIENT_ID is unset"; exit 1; fi

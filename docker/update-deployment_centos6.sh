@@ -13,10 +13,9 @@ fix_yaim () {
 trap "exit 1" TERM
 set -ex
 
-COMMON_PATH="../common"
-WGET_OPTIONS="--no-check-certificate"
+source ../properties
 
-source ${COMMON_PATH}/input.env
+COMMON_PATH="../common"
 
 # install UMD repositories
 sh ${COMMON_PATH}/install-umd-repos.sh
@@ -42,8 +41,8 @@ sed -i 's/sleep 2/sleep 5/' /etc/init.d/bdii
 # do yaim
 /opt/glite/yaim/bin/yaim -c -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_webdav
 
-# install the storm repo
-wget $WGET_OPTIONS  $STORM_REPO -O /etc/yum.repos.d/storm.repo
+# install StoRM repository
+sh ${COMMON_PATH}/install-storm-repo.sh
 
 # update
 yum clean all

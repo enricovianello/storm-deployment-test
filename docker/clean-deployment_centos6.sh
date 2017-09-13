@@ -2,21 +2,17 @@
 set -ex
 trap "exit 1" TERM
 
-COMMON_PATH="../common"
-WGET_OPTIONS="--no-check-certificate"
+source ../properties
 
-source ${COMMON_PATH}/input.env
+COMMON_PATH="../common"
 
 # install UMD repositories
 sh ${COMMON_PATH}/install-umd-repos.sh
 
-# install the storm repo
-wget $WGET_OPTIONS $STORM_REPO -O /etc/yum.repos.d/storm.repo
+# install StoRM repository
+sh ${COMMON_PATH}/install-storm-repo.sh
 
-# install
-yum clean all
-
-# add some users
+# add storm user
 adduser -r storm
 
 # install storm packages
