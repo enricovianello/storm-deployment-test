@@ -18,7 +18,7 @@ source ./../properties
 COMMON_PATH="../common"
 
 # install UMD repositories
-sh ${COMMON_PATH}/install-umd-repos.sh
+sh ${COMMON_PATH}/install-umd-repos.sh ${UMD_RELEASE_RPM}
 
 # add some users
 adduser -r storm
@@ -42,7 +42,7 @@ sed -i 's/sleep 2/sleep 5/' /etc/init.d/bdii
 /opt/glite/yaim/bin/yaim -c -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_webdav
 
 # install StoRM repository
-sh ${COMMON_PATH}/install-storm-repo.sh
+sh ${COMMON_PATH}/install-storm-repo.sh ${STORM_REPO}
 
 # update
 yum clean all

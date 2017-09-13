@@ -12,8 +12,10 @@ if [ -z ${STORM_REPO+x} ]; then echo "STORM_REPO is unset"; exit 1; fi
 if [ -z ${CDMI_CLIENT_ID+x} ]; then echo "CDMI_CLIENT_ID is unset"; exit 1; fi
 if [ -z ${CDMI_CLIENT_SECRET+x} ]; then echo "CDMI_CLIENT_SECRET is unset"; exit 1; fi
 
+# install StoRM repository
+sh ${COMMON_PATH}/install-storm-repo.sh ${STORM_REPO}
+
 # install cdmi_storm
-wget $STORM_REPO -O /etc/yum.repos.d/cdmi-storm.repo
 yum clean all
 yum install -y cdmi-storm
 

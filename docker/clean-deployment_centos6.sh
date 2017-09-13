@@ -7,10 +7,10 @@ source ./../properties
 COMMON_PATH="../common"
 
 # install UMD repositories
-sh ${COMMON_PATH}/install-umd-repos.sh
+sh ${COMMON_PATH}/install-umd-repos.sh ${UMD_RELEASE_RPM}
 
 # install StoRM repository
-sh ${COMMON_PATH}/install-storm-repo.sh
+sh ${COMMON_PATH}/install-storm-repo.sh ${STORM_REPO}
 
 # add storm user
 adduser -r storm
