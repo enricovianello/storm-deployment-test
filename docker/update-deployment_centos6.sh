@@ -13,7 +13,7 @@ fix_yaim () {
 trap "exit 1" TERM
 set -ex
 
-source ../properties
+source ./../properties
 
 COMMON_PATH="../common"
 

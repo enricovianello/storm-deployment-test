@@ -2,7 +2,7 @@
 set -ex
 trap "exit 1" TERM
 
-source ../properties
+source ./../properties
 
 COMMON_PATH="../common"
 APPLICATION_CONFIG_PATH="/var/lib/cdmi-server/config"
