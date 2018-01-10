@@ -50,4 +50,4 @@ fi
 echo "export JAVA_OPTS=\"-Dloader.path=/usr/lib/cdmi-server/plugins/\"" >> /etc/profile.d/cdmi.sh
 chmod +x /etc/profile.d/cdmi.sh
 
-su - cdmi -c "cd /var/lib/cdmi-server; ./cdmi-server-1.2.jar"
+su - cdmi -c "cd /var/lib/cdmi-server; ./cdmi-server-1.2.1.jar"
