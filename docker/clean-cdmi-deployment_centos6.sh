@@ -8,13 +8,9 @@ COMMON_PATH="../common"
 APPLICATION_CONFIG_PATH="/var/lib/cdmi-server/config"
 PLUGINS_CONFIG_PATH="/etc/cdmi-server/plugins"
 
-if [ -z ${STORM_REPO_EL7+x} ]; then echo "STORM_REPO_EL7 is unset"; exit 1; fi
 if [ -z ${CDMI_CLIENT_ID+x} ]; then echo "CDMI_CLIENT_ID is unset"; exit 1; fi
 if [ -z ${CDMI_CLIENT_SECRET+x} ]; then echo "CDMI_CLIENT_SECRET is unset"; exit 1; fi
 REDIS_HOSTNAME="${REDIS_HOSTNAME:-redis.cnaf.infn.it}"
-
-# install StoRM repository
-sh ${COMMON_PATH}/install-storm-repo.sh ${STORM_REPO_EL7}
 
 # install cdmi_storm
 yum clean all
