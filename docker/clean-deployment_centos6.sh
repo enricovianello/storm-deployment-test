@@ -12,6 +12,19 @@ sh ${COMMON_PATH}/install-umd-repos.sh ${UMD_RELEASE_RPM}
 # install StoRM repository
 sh ${COMMON_PATH}/install-storm-repo.sh ${STORM_REPO}
 
+# use local repo
+if [ -n ${USE_LOCAL_REPO+x} ]; then
+   cat << EOF > /etc/yum.repos.d/local-stage-area.repo
+[local-stage-area]
+name=local-stage-area
+baseurl=file:///stage-area/centos6
+protect=1
+enabled=1
+priority=1
+gpgcheck=0
+EOF 
+fi
+
 # add storm user
 adduser -r storm
 
