@@ -13,10 +13,8 @@ sh ${COMMON_PATH}/install-umd-repos.sh ${UMD_RELEASE_RPM}
 sh ${COMMON_PATH}/install-storm-repo.sh ${STORM_REPO}
 
 # use local repo
-if [ -z "${USE_LOCAL_REPO}" ]; then
-    echo "Local repo not set or used"
-else 
-   cat << EOF > /etc/yum.repos.d/local-stage-area.repo
+if [ "${USE_LOCAL_REPO}" = true ]; then
+  cat << EOF > /etc/yum.repos.d/local-stage-area.repo
 [local-stage-area]
 name=local-stage-area
 baseurl=file:///stage-area/centos6
@@ -25,7 +23,10 @@ enabled=1
 priority=1
 gpgcheck=0
 EOF
+else
+  echo "Local repo not set or used"
 fi
+
 
 # add storm user
 adduser -r storm
