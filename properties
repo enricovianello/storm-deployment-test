@@ -1,3 +1,3 @@
-STORM_REPO="http://enricovianello.github.io/storm/repo/storm_preview_sl6.repo"
+STORM_REPO="http://italiangrid.github.io/storm/repo/storm_sl6.repo"
 UMD_RELEASE_RPM="http://repository.egi.eu/sw/production/umd/4/sl6/x86_64/updates/umd-release-4.1.3-1.el6.noarch.rpm"
-STORM_REPO_EL7="https://ci.cloud.cnaf.infn.it/job/pkg.storm/job/cdmi_el7/lastSuccessfulBuild/artifact/rpms/storm-test-centos7.repo"
+STORM_REPO_EL7="http://italiangrid.github.io/storm/repo/storm_centos7.repo"
