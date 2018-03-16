@@ -54,5 +54,8 @@ sed -i 's/sleep 2/sleep 5/' /etc/init.d/bdii
 # configure with yaim
 /opt/glite/yaim/bin/yaim -c -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_webdav
 
+# fix for lcmaps-plugin mapping error
+chown storm:storm /etc/grid-security/gridmapdir
+
 # run post-installation config script
 sh ${COMMON_PATH}/post-config-setup.sh "update"
