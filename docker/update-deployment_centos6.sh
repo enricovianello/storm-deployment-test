@@ -42,7 +42,7 @@ sed -i 's/sleep 2/sleep 5/' /etc/init.d/bdii
 /opt/glite/yaim/bin/yaim -c -s /etc/storm/siteinfo/storm.def -n se_storm_backend -n se_storm_frontend -n se_storm_gridftp -n se_storm_webdav
 
 # fix for lcmaps-plugin mapping error
-chown storm:storm /etc/grid-security/gridmapdir
+chown -R storm:storm /etc/grid-security/gridmapdir
 
 # install StoRM repository
 sh ${COMMON_PATH}/install-storm-repo.sh ${STORM_REPO}
