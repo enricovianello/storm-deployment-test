@@ -17,7 +17,7 @@ STORM_STORAGEAREA_LIST="$VOS noauth igi nested tape test.vo.bis"
 FE_HOST_1=fe.cnaf.infn.it
 FE_HOST_2=docker-storm.cnaf.infn.it
 
-STORM_FRONTEND_HOST_LIST=$FE_HOST_1, $FE_HOST_2
+STORM_FRONTEND_HOST_LIST=$FE_HOST_1,$FE_HOST_2
 STORM_SURL_ENDPOINT_LIST=srm://$FE_HOST_1:8444/srm/managerv2,srm://$FE_HOST_2:8444/srm/managerv2
 
 STORM_BACKEND_HOST=`hostname -f`
