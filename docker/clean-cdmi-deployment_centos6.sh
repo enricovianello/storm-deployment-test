@@ -8,12 +8,9 @@ COMMON_PATH="../common"
 APPLICATION_CONFIG_PATH="/var/lib/cdmi-server/config"
 PLUGINS_CONFIG_PATH="/etc/cdmi-server/plugins"
 
-if [ -z ${STORM_REPO+x} ]; then echo "STORM_REPO is unset"; exit 1; fi
 if [ -z ${CDMI_CLIENT_ID+x} ]; then echo "CDMI_CLIENT_ID is unset"; exit 1; fi
 if [ -z ${CDMI_CLIENT_SECRET+x} ]; then echo "CDMI_CLIENT_SECRET is unset"; exit 1; fi
-
-# install StoRM repository
-sh ${COMMON_PATH}/install-storm-repo.sh ${STORM_REPO}
+REDIS_HOSTNAME="${REDIS_HOSTNAME:-redis.cnaf.infn.it}"
 
 # install cdmi_storm
 yum clean all
@@ -22,6 +19,7 @@ yum install -y cdmi-storm
 # Configure
 rm -rf ${APPLICATION_CONFIG_PATH}/application.yml
 cp -rf ../cdmi/application.yml ${APPLICATION_CONFIG_PATH}/application.yml
+sed -i "s/REDIS_HOSTNAME/${REDIS_HOSTNAME}/g" ${APPLICATION_CONFIG_PATH}/application.yml
 sed -i "s/CLIENT_ID/${CDMI_CLIENT_ID}/g" ${APPLICATION_CONFIG_PATH}/application.yml
 sed -i "s/CLIENT_SECRET/${CDMI_CLIENT_SECRET}/g" ${APPLICATION_CONFIG_PATH}/application.yml
 
@@ -52,4 +50,4 @@ fi
 echo "export JAVA_OPTS=\"-Dloader.path=/usr/lib/cdmi-server/plugins/\"" >> /etc/profile.d/cdmi.sh
 chmod +x /etc/profile.d/cdmi.sh
 
-su - cdmi -c "cd /var/lib/cdmi-server; ./cdmi-server-1.2.jar"
+su - cdmi -c "cd /var/lib/cdmi-server; ./cdmi-server-1.2.1.jar"
